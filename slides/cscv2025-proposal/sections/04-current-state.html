@@ -1,0 +1,107 @@
+<section class="slide section-divider" id="s8">
+  <h2>Chapter 2</h2>
+  <p>現状分析</p>
+  <span class="slide-number">Slide 8 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s9">
+  <h2>既存アーキテクチャ</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: Django API</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">App2: PHP Storage</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">ファイルストレージ</div>
+  </div>
+  <table style="margin-top:1.5rem">
+    <tr><th>コンポーネント</th><th>技術スタック</th><th>役割</th><th>ポート</th></tr>
+    <tr><td>App1</td><td>Python / Django / uWSGI</td><td>REST APIゲートウェイ、JWT認証</td><td>8000</td></tr>
+    <tr><td>App2</td><td>PHP / Apache</td><td>ファイルストレージ、7zipアーカイブ展開</td><td>80</td></tr>
+    <tr><td>Orchestration</td><td>Docker Compose</td><td>コンテナオーケストレーション</td><td>—</td></tr>
+  </table>
+  <div class="highlight-box">
+    <strong>注意:</strong> App1は <code>STORAGE_URL=http://app2</code> でApp2へHTTP（暗号化なし）で接続しています。
+  </div>
+  <span class="slide-number">Slide 9 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s10">
+  <h2>App1: Django APIゲートウェイ 詳細</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">技術構成</div>
+      <ul>
+        <li>Django REST Framework</li>
+        <li>JWT認証（SimpleJWT）</li>
+        <li>uWSGIサーバー</li>
+        <li>Dockerコンテナ化</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">主要機能</div>
+      <ul>
+        <li>ユーザー認証・認可</li>
+        <li>ファイルアップロードAPI</li>
+        <li>ストレージサービス連携</li>
+        <li>ヘルスチェックエンドポイント</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">既知の懸念事項</div>
+      <ul>
+        <li>内部通信の暗号化なし</li>
+        <li>リクエスト率制限の未確認</li>
+        <li>CORS設定の確認が必要</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">改善候補</div>
+      <ul>
+        <li>mTLSによるサービス間通信</li>
+        <li>レートリミッティングの実装</li>
+        <li>詳細なログ記録と監視</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 10 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s11">
+  <h2>App2: PHPストレージサービス 詳細</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">技術構成</div>
+      <ul>
+        <li>PHP + Apache</li>
+        <li>gemorroj/archive7zライブラリ</li>
+        <li>ファイルシステムストレージ</li>
+        <li>Dockerコンテナ化</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">主要機能</div>
+      <ul>
+        <li>ファイルアップロード処理</li>
+        <li>7zip/ZIP/RARアーカイブ展開</li>
+        <li>フラグファイルのマウント</li>
+        <li>ヘルスチェック（未実装）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">高リスク項目</div>
+      <ul>
+        <li>ファイル名検証の不備</li>
+        <li>パストラバーサル可能性</li>
+        <li>アーカイブ内の悪意あるファイル</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">改善候補</div>
+      <ul>
+        <li>ファイルタイプ検証の強化</li>
+        <li>サンドボックス化された展開</li>
+        <li>コンテンツセキュリティポリシー</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 11 / 60</span>
+</section>

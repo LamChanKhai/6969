@@ -1,0 +1,175 @@
+<section class="slide section-divider" id="s19">
+  <h2>Chapter 4</h2>
+  <p>提案ソリューション</p>
+  <span class="slide-number">Slide 19 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s20">
+  <h2>刷新アーキテクチャ概要</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">WAF / LB</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">APIゲートウェイ</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">マイクロサービス</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">WAF / ロードバランサー</div>
+      <p>OWASPルールセット、レートリミッティング、DDoS防御</p>
+    </div>
+    <div class="card">
+      <div class="card-title">APIゲートウェイ</div>
+      <p>認証・認可、リクエスト検証、APIバージョニング</p>
+    </div>
+    <div class="card">
+      <div class="card-title">マイクロサービス</div>
+      <p>Authentication、File Processing、Storage、Monitoring</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>設計原則:</strong> ゼロトラスト、最小権限、ディフェンスインディプス、Fail-Safeデフォルト
+  </div>
+  <span class="slide-number">Slide 20 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s21">
+  <h2>セキュリティ強化設計</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ファイルアップロード保護</div>
+      <ul>
+        <li>ファイルタイプ検証（MIME + マジックナンバー）</li>
+        <li>ファイルサイズ制限（100MB上限）</li>
+        <li>ランダムファイル名生成</li>
+        <li>サンドボックス化されたストレージ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">アーカイブ展開保護</div>
+      <ul>
+        <li>展開先の事前検証</li>
+        <li>パス TRAVERSAL チェック</li>
+        <li>展開サイズ制限（Zip Bomb対策）</li>
+        <li>展開後のウイルススキャン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">通信セキュリティ</div>
+      <ul>
+        <li>mTLSによるサービス間通信</li>
+        <li>TLS 1.3による外部通信</li>
+        <li>HSTS + CSPヘッダー</li>
+        <li>秘密鍵の暗号化管理</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">認証・認可強化</div>
+      <ul>
+        <li>JWT轮换 + リフレッシュトークン</li>
+        <li>RBACによる権限分離</li>
+        <li>MFA対応</li>
+        <li>セッション管理の強化</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 21 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s22">
+  <h2>コンテナセキュリティ強化</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">イメージセキュリティ</div>
+      <p>最小ベースイメージ、Trivyスキャン、署名検証、SBOM生成</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ランタイム保護</div>
+      <p>非ルート実行、リードオンリーFS、Capabilities制限、Seccompプロファイル</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ネットワーク分離</div>
+      <p>サービス別ネットワーク、Network Policy、ingress/egress制限</p>
+    </div>
+    <div class="card">
+      <div class="card-title">秘密鍵管理</div>
+      <p>Vault統合、自動轮换、暗号化ストレージ、アクセス監査</p>
+    </div>
+    <div class="card">
+      <div class="card-title">監査・ログ</div>
+      <p>集中ログ管理、Immutableログ、リアルタイムアラート、SIEM連携</p>
+    </div>
+    <div class="card">
+      <div class="card-title">バックアップ</div>
+      <p>自動バックアップ、暗号化保存、復旧テスト、バージョニング</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 22 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s23">
+  <h2>DevSecOpsパイプライン</h2>
+  <div class="flow-row">
+    <div class="flow-node">コードコミット</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">SAST</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">依存関係スキャン</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">コンテナビルド</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">イメージスキャン</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">デプロイ</div>
+  </div>
+  <div class="card-grid grid2" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">SAST（静的アプリケーションセキュリティテスト）</div>
+      <p>CodeQL、Bandit（Python）、PHPStan（PHP）によるコードスキャン</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DAST（動的アプリケーションセキュリティテスト）</div>
+      <p>OWASP ZAP、Burp Suiteによる自動テスト、毎回のデプロイ前に実行</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>セキュリティゲート:</strong> Critical/High脆弱性が検出された場合、パイプラインを自動的に停止し、開発者に通知します。
+  </div>
+  <span class="slide-number">Slide 23 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s24">
+  <h2>モニタリング・観測性</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ログ管理</div>
+      <ul>
+        <li>ELK Stack（Elasticsearch, Logstash, Kibana）</li>
+        <li>構造化ログ出力（JSON形式）</li>
+        <li>ログの集中収集・分析</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">メトリクス</div>
+      <ul>
+        <li>Prometheus + Grafanaダッシュボード</li>
+        <li>API応答時間、エラー率、リクエスト数</li>
+        <li>リソース使用率（CPU、メモリ、ディスク）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">トレーシング</div>
+      <ul>
+        <li>Jaegerによる分散トレーシング</li>
+        <li>サービス間のリクエスト追跡</li>
+        <li>ボトルネック特定</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">アラート</div>
+      <ul>
+        <li>PagerDuty / Slack統合</li>
+        <li>カスタムアラートルール</li>
+        <li>エスカレーションポリシー</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 24 / 60</span>
+</section>

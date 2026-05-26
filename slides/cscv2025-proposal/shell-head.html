@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CSCV2025 セキュリティ評価およびプラットフォーム刷新プロジェクト — FPT Software提案</title>
+<style>
+:root{
+  --bg:#f8faff;--surface:#fff;--surface-2:rgba(255,255,255,0.95);
+  --text:#1a202c;--muted:#6b7280;
+  --accent:#003087;--accent2:#0072CE;--accent3:#FF6B00;
+  --border:#e2e8f0;--border-strong:#cbd5e1;
+  --gradient1:linear-gradient(135deg,#003087 0%,#0072CE 100%);
+  --gradient-hero:linear-gradient(160deg,#001a4d 0%,#003087 45%,#0072CE 100%);
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+}
+[data-theme="dark"]{
+  --bg:#0a0e1a;--surface:#111827;--surface-2:rgba(17,24,39,0.92);
+  --text:#e2e8f0;--muted:#9ca3af;
+  --border:#374151;--border-strong:#4b5563;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  font-family:"Meiryo UI","Yu Gothic","Meiryo","Hiragino Sans","Noto Sans CJK JP",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:20px;line-height:1.55;
+  transition:background .3s,color .3s;
+}
+.deck{display:flex;flex-direction:column;align-items:center}
+
+.slide-wrap{width:var(--scaled-w,1920px);height:var(--scaled-h,1080px);position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.slide-wrap > .slide{transform:scale(var(--scale,1));transform-origin:top left;border-bottom:0}
+
+.slide{
+  position:relative;
+  width:1920px;height:1080px;min-height:1080px;max-height:1080px;
+  padding:72px 96px 92px;
+  display:flex;flex-direction:column;
+  background:var(--bg);overflow:hidden;
+}
+.slide.cover{align-items:center;justify-content:center;text-align:center;background:var(--gradient-hero);color:white;padding:96px}
+.slide.section-divider{align-items:center;justify-content:center;text-align:center;background:var(--gradient1);color:white}
+
+h1,h2,h3{font-weight:700;line-height:1.2}
+.slide h1{font-size:3.2em;margin-bottom:.3em}
+.slide h2{font-size:2.2em;color:var(--accent);margin-bottom:.4em}
+.slide h3{font-size:1.2em;color:var(--accent2);margin-bottom:.3em}
+.slide.section-divider h2{color:white!important;font-size:2.8em}
+.slide.section-divider p{color:rgba(255,255,255,.88);font-size:1.2em;margin-top:.6em}
+.slide.cover h1{color:white;font-size:3.4em}
+.slide p{font-size:1.1em;color:var(--muted);margin-bottom:1rem}
+.slide ul{padding-left:1.4em;margin-top:.4rem}
+.slide ul li{font-size:clamp(1.1em,1.5vw,1.3em);margin:.5em 0;line-height:1.45}
+
+.card-grid{display:grid;gap:1.2rem;margin-top:.6rem}
+.grid2{grid-template-columns:1fr 1fr}
+.grid3{grid-template-columns:1fr 1fr 1fr}
+.grid4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:1.5rem 1.8rem;box-shadow:var(--shadow);overflow-wrap:break-word;word-break:break-word}
+.card-title{font-weight:700;font-size:1.35em;color:var(--accent);margin-bottom:.5em}
+
+.badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:.9em;font-weight:600;margin-bottom:.6rem}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-orange{background:#fed7aa;color:#c2410c}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+.badge-red{background:#fee2e2;color:#991b1b}
+
+.flow-row{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;margin:.6em 0}
+.flow-node{background:var(--surface-2);border:2px solid var(--accent2);border-radius:12px;padding:.8rem 1.4rem;text-align:center;font-size:clamp(.9em,1.3vw,1.1em);font-weight:600;color:var(--text);min-width:140px;box-shadow:var(--shadow)}
+.flow-node.accent{background:var(--gradient1);color:white;border-color:var(--accent)}
+.flow-node.warm{background:linear-gradient(135deg,#FF6B00,#FF8F3A);color:white;border-color:#FF6B00}
+.flow-node.orange{background:linear-gradient(135deg,#ff6b00,#ff9500);color:white;border-color:#ff6b00}
+.flow-node.green{background:#065f46;color:white;border-color:#065f46}
+.flow-arrow{font-size:1.6em;color:var(--accent2);font-weight:700}
+.flow-label{font-size:1em;color:var(--muted);text-align:center;margin:.3em 0;font-weight:600}
+.arrow{font-size:1.3em;color:var(--accent2);font-weight:700}
+
+.gantt-wrap{overflow-x:auto;width:100%;margin-top:.6rem;display:grid;grid-template-columns:max-content 1fr;column-gap:.6rem;row-gap:.22rem;align-items:center;font-size:clamp(.85em,1.2vw,1em)}
+.gantt-row{display:contents}
+.gantt-label{min-width:0;width:auto;color:var(--text);font-weight:500}
+.gantt-track{background:var(--border);border-radius:4px;height:22px;position:relative;min-width:240px}
+.gantt-bar{position:absolute;height:100%;border-radius:4px}
+.gantt-row.gantt-sep > .gantt-label,.gantt-row.gantt-sep > .gantt-track{margin-top:.4rem}
+
+.highlight-box{background:linear-gradient(135deg,#e5eaf4,#e5f1fa);border-left:4px solid var(--accent2);border-radius:10px;padding:1.3rem 1.8rem;margin-top:1.5rem;font-size:1.1em}
+.accent-box{background:linear-gradient(135deg,#ffe2cc,#fff4ea);border-left:4px solid var(--accent3);border-radius:10px;padding:1.3rem 1.8rem;margin-top:1rem;font-size:1.1em}
+
+table{width:100%;border-collapse:collapse;font-size:clamp(.9em,1.3vw,1.05em);margin-top:.6rem}
+th{background:var(--gradient1);color:white;padding:12px 16px;text-align:left;font-weight:600}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+tr:nth-child(even) td{background:#f1f4fa}
+
+.big-number{font-size:clamp(3em,6vw,5em);font-weight:900;color:var(--accent2);line-height:1}
+.big-label{font-size:1.1em;color:var(--muted);margin-top:.3em}
+
+.slide.slide--sparse h2{font-size:2.6em}
+.slide.slide--sparse h3{font-size:1.5em}
+.slide.slide--sparse p{font-size:1.35em}
+.slide.slide--sparse ul li{font-size:1.5em;margin:.7em 0}
+.slide.slide--sparse table{font-size:1.2em}
+.slide.slide--sparse th,.slide.slide--sparse td{padding:14px 18px}
+.slide.slide--sparse .flow-node{font-size:1.3em;padding:1rem 1.6rem;min-width:170px}
+.slide.slide--sparse .flow-arrow{font-size:1.9em}
+.slide.slide--sparse .card-title{font-size:1.55em}
+.slide.slide--sparse .card{padding:1.7rem 2rem}
+.slide.slide--sparse .highlight-box,.slide.slide--sparse .accent-box{font-size:1.3em;padding:1.5rem 2rem}
+.slide.slide--sparse .gantt-wrap{font-size:1.15em}
+
+.slide.slide--very-sparse h2{font-size:3em}
+.slide.slide--very-sparse h3{font-size:1.7em}
+.slide.slide--very-sparse p{font-size:1.55em}
+.slide.slide--very-sparse ul li{font-size:1.7em;margin:.85em 0}
+.slide.slide--very-sparse table{font-size:1.4em}
+.slide.slide--very-sparse th,.slide.slide--very-sparse td{padding:16px 22px}
+.slide.slide--very-sparse .flow-node{font-size:1.55em;padding:1.2rem 1.9rem;min-width:200px}
+.slide.slide--very-sparse .flow-arrow{font-size:2.2em}
+.slide.slide--very-sparse .card-title{font-size:1.8em}
+.slide.slide--very-sparse .card{padding:1.9rem 2.3rem}
+.slide.slide--very-sparse .highlight-box,.slide.slide--very-sparse .accent-box{font-size:1.55em;padding:1.8rem 2.4rem}
+.slide.slide--very-sparse .gantt-wrap{font-size:1.3em}
+
+.attribution{position:absolute;bottom:14px;left:24px;font-size:12px;color:var(--muted);opacity:.6;pointer-events:none}
+.slide.cover .attribution,.slide.section-divider .attribution{color:rgba(255,255,255,.55)}
+.slide-number{position:absolute;bottom:14px;right:24px;font-size:14px;color:var(--muted);opacity:.7}
+.slide.cover .slide-number,.slide.section-divider .slide-number{color:rgba(255,255,255,.7)}
+
+.brand-mark{position:absolute;top:22px;right:32px;width:96px;height:auto;pointer-events:none;z-index:5}
+
+#slide-nav{position:fixed;top:0;left:0;right:0;background:rgba(0,48,135,.97);color:white;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:1000;gap:1rem;font-size:.95em}
+#slide-nav button{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:1em}
+.theme-toggle{position:fixed;top:64px;right:20px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:1.1em;box-shadow:var(--shadow)}
+body{padding-top:54px}
+
+.thumb-nav{position:fixed;left:0;top:54px;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px 10px;z-index:998;display:none}
+.thumb-nav.open{display:block}
+body.thumbs-open{padding-left:220px}
+body.thumbs-open .theme-toggle{left:240px;right:auto}
+.thumb{width:200px;height:112px;margin-bottom:10px;border:2px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;position:relative;background:#fff}
+.thumb:hover{border-color:var(--accent2)}
+.thumb.active{border-color:var(--accent3);box-shadow:0 0 0 2px rgba(255,107,0,.3)}
+.thumb-inner{width:1920px;height:1080px;transform:scale(0.1042);transform-origin:top left;pointer-events:none}
+.thumb-num{position:absolute;top:3px;left:4px;font-size:10px;font-weight:600;background:rgba(0,0,0,.65);color:#fff;padding:1px 5px;border-radius:3px;z-index:2}
+.thumb-toggle{position:fixed;top:64px;left:20px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:1.1em;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<div id="slide-nav">
+  <div><strong>CSCV2025 セキュリティ評価およびプラットフォーム刷新プロジェクト — FPT Software提案</strong></div>
+  <div><button onclick="prevSlide()">◀</button> <span id="nav-pos">1 / 60</span> <button onclick="nextSlide()">▶</button></div>
+</div>
+<button class="thumb-toggle" onclick="toggleThumbs()" title="Slides">☰</button>
+<button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+<aside class="thumb-nav" id="thumb-nav"></aside>
+<div class="deck">

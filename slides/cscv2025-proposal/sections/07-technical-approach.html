@@ -1,0 +1,170 @@
+<section class="slide section-divider" id="s25">
+  <h2>Chapter 5</h2>
+  <p>技術的アプローチ</p>
+  <span class="slide-number">Slide 25 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s26">
+  <h2>実装フェーズ</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Phase 1: セキュリティ評価（Month 1）</div>
+      <ul>
+        <li>既存システムの完全な脆弱性診断</li>
+        <li>CTFシナリオの特定とドキュメント化</li>
+        <li>脅威モデルの構築</li>
+        <li>セキュリティ評価レポート</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 2: アーキテクチャ設計（Month 2）</div>
+      <ul>
+        <li>刷新アーキテクチャの詳細設計</li>
+        <li>セキュリティパターン適用</li>
+        <li>DevSecOpsパイプライン設計</li>
+        <li>レビューと承認</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 3: 実装（Month 3-4）</div>
+      <ul>
+        <li>マイクロサービスの実装</li>
+        <li>セキュリティ機能の実装</li>
+        <li>DevSecOpsパイプライン構築</li>
+        <li>ユニット・統合テスト</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 4: 検証・デモ（Month 5）</div>
+      <ul>
+        <li>ペネトレーションテスト</li>
+        <li>パフォーマンスベンチマーク</li>
+        <li>デモ環境の構築</li>
+        <li>最終プレゼンテーション</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 26 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s27">
+  <h2>技術スタック選定</h2>
+  <table>
+    <tr><th>レイヤー</th><th>既存</th><th>刷新後</th><th>選定理由</th></tr>
+    <tr><td>APIフレームワーク</td><td>Django REST</td><td>Django REST + FastAPI</td><td>既存資産の活用 + 高性能エンドポイント</td></tr>
+    <tr><td>ストレージサービス</td><td>PHP/Apache</td><td>Go microservice</td><td>型安全、並列処理、メモリ安全性</td></tr>
+    <tr><td>認証</td><td>SimpleJWT</td><td>Keycloak</td><td>標準的なIAM、MFA、SSO対応</td></tr>
+    <tr><td>通信</td><td>HTTP</td><td>mTLS + gRPC</td><td>相互認証、高性能</td></tr>
+    <tr><td>コンテナ</td><td>Docker Compose</td><td>Kubernetes</td><td>スケーラビリティ、自己修復</td></tr>
+    <tr><td>監視</td><td>なし</td><td>Prometheus + Grafana</td><td>業界標準の観測性スタック</td></tr>
+  </table>
+  <span class="slide-number">Slide 27 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s28">
+  <h2>移行戦略</h2>
+  <div class="flow-row">
+    <div class="flow-node">並行構築</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">段階的切り替え</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">完全移行</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">旧システム退役</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">ステップ 1: 並行構築</div>
+      <p>新システムを既存システムと並行して構築。データ同期を確保</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 2: 段階的切り替え</div>
+      <p>機能ごとに新旧を切り替え。APIゲートウェイでルーティング制御</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 3: 完全移行</div>
+      <p>全てのトラフィックを新システムへ。ロールバック計画を保持</p>
+    </div>
+  </div>
+  <div class="accent-box">
+    <strong>リスク低減:</strong> 各フェーズでスモークテストとパフォーマンス検証を実施し、問題があれば即座にロールバックします。
+  </div>
+  <span class="slide-number">Slide 28 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s29">
+  <h2>ファイルアップロード保護 — 実装詳細</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">入力検証層</div>
+      <ul>
+        <li>MIMEタイプ検証（Content-Type + マジックナンバー）</li>
+        <li>ファイル拡張子ホワイトリスト</li>
+        <li>ファイルサイズ制限（100MB）</li>
+        <li>エンコーディング検証</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">展開保護層</div>
+      <ul>
+        <li>展開先の事前検証（Chroot/Jail）</li>
+        <li>各ファイルのパス検証（../ の検出）</li>
+        <li>展開サイズ制限（1GB上限）</li>
+        <li>ファイル数制限（1000ファイル上限）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">ストレージ保護層</div>
+      <ul>
+        <li>ランダムUUIDベースのファイル名</li>
+        <li>隔離されたストレージボリューム</li>
+        <li>ファイルパーミッションの制限</li>
+        <li>暗号化ストレージ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">監視層</div>
+      <ul>
+        <li>アップロードイベントのログ記録</li>
+        <li>異常パターンの検出</li>
+        <li>リアルタイムアラート</li>
+        <li>定期監査レポート</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 29 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s30">
+  <h2>テスト戦略</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ユニットテスト</div>
+      <ul>
+        <li>各コンポーネントの個別テスト</li>
+        <li>カバレッジ目標: 80%以上</li>
+        <li>CI/CDでの自動実行</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">統合テスト</div>
+      <ul>
+        <li>サービス間の連携テスト</li>
+        <li>APIエンドポイントの全テスト</li>
+        <li>データフローの検証</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティテスト</div>
+      <ul>
+        <li>SAST/DASTの自動実行</li>
+        <li>ペネトレーションテスト</li>
+        <li>脆弱性スキャン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">パフォーマンステスト</div>
+      <ul>
+        <li>負荷テスト（1000 RPS目標）</li>
+        <li>ストレステスト</li>
+        <li>耐久テスト（24時間）</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 30 / 60</span>
+</section>

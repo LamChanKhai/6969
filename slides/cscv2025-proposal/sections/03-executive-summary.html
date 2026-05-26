@@ -1,0 +1,80 @@
+<section class="slide section-divider" id="s4">
+  <h2>Chapter 1</h2>
+  <p>エグゼクティブサマリー</p>
+  <span class="slide-number">Slide 4 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s5">
+  <h2>プロジェクトの背景</h2>
+  <div class="highlight-box">
+    <strong>CSCV2025（Cyber Security Capture-the-Flag 2025）</strong> は、セキュリティ評価とプラットフォーム刷新を目的としたプロジェクトです。既存の二層アーキテクチャ（Django APIゲートウェイ + PHPストレージサービス）を評価・強化し、セキュアなデモプラットフォームとして再構築します。
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">セキュリティ評価</div>
+      <p>既存システムの脆弱性診断とCTFベースの評価を実施</p>
+    </div>
+    <div class="card">
+      <div class="card-title">プラットフォーム刷新</div>
+      <p>評価結果に基づき、アーキテクチャの再設計とセキュリティ強化</p>
+    </div>
+    <div class="card">
+      <div class="card-title">デモ環境構築</div>
+      <p>刷新後のシステムをデモ環境として動作確認・提示</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 5 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s6">
+  <h2>主要課題</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ファイルアップロード脆弱性</div>
+      <p>PHPストレージサービスのファイルアップロード機能は、入力検証不足による任意コード実行の可能性を有します。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">7zipアーカイブ処理リスク</div>
+      <p>gemorroj/archive7zライブラリを使用したアーカイブ展開は、Zip Slip攻撃などのパストラバーサル脆弱性を含みます。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">認証・認可の未整備</div>
+      <p>JWT認証は実装されていますが、トークン管理、リフレッシュ、権限レベルの分離に改善余地があります。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">コンテナセキュリティ</div>
+      <p>Docker Compose環境におけるネットワーク分離、権限制限、イメージスキャンが不十分です。</p>
+    </div>
+  </div>
+  <div class="accent-box">
+    <strong>CTFフラグ:</strong> 既存システムには <code>CSCV2025{for_testing}</code> のテストフラグが含まれており、セキュリティ評価の起点となります。
+  </div>
+  <span class="slide-number">Slide 6 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s7">
+  <h2>FPT Softwareの推奨アプローチ</h2>
+  <div class="flow-row">
+    <div class="flow-node">現状分析</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">脆弱性評価</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">再設計</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">実装・検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">デモ提示</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">ゼロトラスト設計</div>
+      <p>全ての通信を暗号化し、最小権限の原則でアクセス制御を実装</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DevSecOps統合</div>
+      <p>CI/CDパイプラインへのセキュリティチェック統合、自動スキャン</p>
+    </div>
+    <div class="card">
+      <div class="card-title">継続的監視</div>
+      <p>リアルタイムのログ監視、異常検知、インシデントレスポンス体制</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 7 / 60</span>
+</section>

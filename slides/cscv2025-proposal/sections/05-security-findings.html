@@ -1,0 +1,166 @@
+<section class="slide section-divider" id="s12">
+  <h2>Chapter 3</h2>
+  <p>セキュリティ評価</p>
+  <span class="slide-number">Slide 12 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s13">
+  <h2>脆弱性評価サマリー</h2>
+  <table>
+    <tr><th>ID</th><th>脆弱性</th><th>CVE</th><th>重大度</th><th>影響</th></tr>
+    <tr><td>VULN-01</td><td>ファイルアップロードによる任意コード実行</td><td>CWE-94</td><td><span class="badge badge-red">Critical</span></td><td>完全なシステム乗っ取り</td></tr>
+    <tr><td>VULN-02</td><td>Zip Slip — パス TRAVERSAL</td><td>CWE-22</td><td><span class="badge badge-red">Critical</span></td><td>ファイルシステム書き込み</td></tr>
+    <tr><td>VULN-03</td><td>サービス間通信の平文送信</td><td>CWE-319</td><td><span class="badge badge-orange">High</span></td><td>中間者攻撃</td></tr>
+    <tr><td>VULN-04</td><td>JWTトークン管理の不備</td><td>CWE-613</td><td><span class="badge badge-orange">High</span></td><td>認証バイパス</td></tr>
+    <tr><td>VULN-05</td><td>コンテナ権限の過剰付与</td><td>CWE-250</td><td><span class="badge badge-orange">High</span></td><td>コンテナエスケープ</td></tr>
+    <tr><td>VULN-06</td><td>インメモリフラグファイルの露出</td><td>CWE-538</td><td><span class="badge badge-blue">Medium</span></td><td>機密情報漏洩</td></tr>
+  </table>
+  <span class="slide-number">Slide 13 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s14">
+  <h2>脅威モデル — STRIDE（1/2）</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Spoofing（なりすまし）</div>
+      <ul>
+        <li>JWTトークンの改ざん・再利用</li>
+        <li>サービス間通信のなりすまし</li>
+        <li>管理APIの未認証アクセス</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Tampering（改ざん）</div>
+      <ul>
+        <li>アップロードファイルの改ざん</li>
+        <li>アーカイブ内の悪意あるコード</li>
+        <li>設定ファイルの書き換え</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Repudiation（否認）</div>
+      <ul>
+        <li>監査ログの不備</li>
+        <li>操作履歴の追跡不能</li>
+        <li>ログの改ざん可能性</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 14 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s15">
+  <h2>脅威モデル — STRIDE（2/2）</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Information Disclosure（情報漏洩）</div>
+      <ul>
+        <li>フラグファイルの直接アクセス</li>
+        <li>平文通信によるデータ漏洩</li>
+        <li>エラーメッセージの詳細漏洩</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">DoS（拒否）</div>
+      <ul>
+        <li>Zip Bomb攻撃</li>
+        <li>大規模ファイルアップロード</li>
+        <li>リソース枯渇攻撃</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Elevation of Privilege（権限昇格）</div>
+      <ul>
+        <li>コンテナ内での権限昇格</li>
+        <li>ホストファイルシステムアクセス</li>
+        <li>特権コマンドの実行</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 15 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s16">
+  <h2>攻撃シナリオ — ファイルアップロード経由</h2>
+  <div class="flow-row">
+    <div class="flow-node">攻撃者</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">悪意あるZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: API</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">App2: 展開</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node" style="border-color:#dc2626;background:#fee2e2">ホストFS書き込み</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">Step 1: 悪意あるZIP作成</div>
+      <p><code>../../etc/cron.d/malicious</code> を含むZIPファイルを生成</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 2: アップロード・展開</div>
+      <p>App2のarchive7zライブラリが検証不足でパスをそのまま展開</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 3: コード実行</div>
+      <p>書き込まれたファイルが実行され、システム乗っ取りに成功</p>
+    </div>
+  </div>
+  <div class="accent-box">
+    <strong>CTF関連:</strong> この攻撃シナリオは、<code>flag.txt</code> の読み取り（情報漏洩）と <code>/flag.txt</code> のマウント点への書き込み（権限昇格）の両方の経路を持ちます。
+  </div>
+  <span class="slide-number">Slide 16 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s17">
+  <h2>リスク評価マトリックス</h2>
+  <table>
+    <tr><th>リスク</th><th>発生確率</th><th>影響度</th><th>リスクスコア</th><th>ステータス</th></tr>
+    <tr><td>ファイルアップロード脆弱性</td><td><span class="badge badge-red">高</span></td><td><span class="badge badge-red">甚大</span></td><td><strong>25</strong></td><td>即座に対応必要</td></tr>
+    <tr><td>Zip Slip攻撃</td><td><span class="badge badge-red">高</span></td><td><span class="badge badge-red">甚大</span></td><td><strong>25</strong></td><td>即座に対応必要</td></tr>
+    <tr><td>平文通信</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">大</span></td><td><strong>12</strong></td><td>早期対応</td></tr>
+    <tr><td>JWT管理不備</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">大</span></td><td><strong>12</strong></td><td>早期対応</td></tr>
+    <tr><td>Zip Bomb</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-orange">大</span></td><td><strong>8</strong></td><td>計画対応</td></tr>
+    <tr><td>コンテナ権限</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-orange">大</span></td><td><strong>8</strong></td><td>計画対応</td></tr>
+  </table>
+  <div class="highlight-box">
+    <strong>優先順位:</strong> ファイルアップロードとZip Slipの2つのCriticalリスクを最優先で解消し、その後平文通信とJWT管理のHighリスクに対処します。
+  </div>
+  <span class="slide-number">Slide 17 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s18">
+  <h2>コンテナセキュリティ評価</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">現在の状態</div>
+      <ul>
+        <li>Docker Composeによる単一ネットワーク</li>
+        <li>ルート権限でのコンテナ実行可能性</li>
+        <li>ネットワーク分離の欠如</li>
+        <li>イメージスキャンの未実施</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">推奨改善</div>
+      <ul>
+        <li>非ルートユーザーでの実行</li>
+        <li>サービス別ネットワーク分離</li>
+        <li>Trivyによるイメージスキャン</li>
+        <li>リードオンリールートファイルシステム</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Docker Compose 問題点</div>
+      <ul>
+        <li>フラグファイルのボリュームマウント</li>
+        <li>サービス間HTTP通信</li>
+        <li>ポート公開範囲の広さ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">DevSecOps統合</div>
+      <ul>
+        <li>CI/CDへのセキュリティゲート</li>
+        <li>SAST/DASTの自動化</li>
+        <li>依存関係スキャン</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 18 / 60</span>
+</section>

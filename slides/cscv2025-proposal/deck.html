@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CSCV2025 セキュリティ評価およびプラットフォーム刷新プロジェクト — FPT Software提案</title>
+<style>
+:root{
+  --bg:#f8faff;--surface:#fff;--surface-2:rgba(255,255,255,0.95);
+  --text:#1a202c;--muted:#6b7280;
+  --accent:#003087;--accent2:#0072CE;--accent3:#FF6B00;
+  --border:#e2e8f0;--border-strong:#cbd5e1;
+  --gradient1:linear-gradient(135deg,#003087 0%,#0072CE 100%);
+  --gradient-hero:linear-gradient(160deg,#001a4d 0%,#003087 45%,#0072CE 100%);
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+}
+[data-theme="dark"]{
+  --bg:#0a0e1a;--surface:#111827;--surface-2:rgba(17,24,39,0.92);
+  --text:#e2e8f0;--muted:#9ca3af;
+  --border:#374151;--border-strong:#4b5563;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  font-family:"Meiryo UI","Yu Gothic","Meiryo","Hiragino Sans","Noto Sans CJK JP",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:20px;line-height:1.55;
+  transition:background .3s,color .3s;
+}
+.deck{display:flex;flex-direction:column;align-items:center}
+
+.slide-wrap{width:var(--scaled-w,1920px);height:var(--scaled-h,1080px);position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.slide-wrap > .slide{transform:scale(var(--scale,1));transform-origin:top left;border-bottom:0}
+
+.slide{
+  position:relative;
+  width:1920px;height:1080px;min-height:1080px;max-height:1080px;
+  padding:72px 96px 92px;
+  display:flex;flex-direction:column;
+  background:var(--bg);overflow:hidden;
+}
+.slide.cover{align-items:center;justify-content:center;text-align:center;background:var(--gradient-hero);color:white;padding:96px}
+.slide.section-divider{align-items:center;justify-content:center;text-align:center;background:var(--gradient1);color:white}
+
+h1,h2,h3{font-weight:700;line-height:1.2}
+.slide h1{font-size:3.2em;margin-bottom:.3em}
+.slide h2{font-size:2.2em;color:var(--accent);margin-bottom:.4em}
+.slide h3{font-size:1.2em;color:var(--accent2);margin-bottom:.3em}
+.slide.section-divider h2{color:white!important;font-size:2.8em}
+.slide.section-divider p{color:rgba(255,255,255,.88);font-size:1.2em;margin-top:.6em}
+.slide.cover h1{color:white;font-size:3.4em}
+.slide p{font-size:1.1em;color:var(--muted);margin-bottom:1rem}
+.slide ul{padding-left:1.4em;margin-top:.4rem}
+.slide ul li{font-size:clamp(1.1em,1.5vw,1.3em);margin:.5em 0;line-height:1.45}
+
+.card-grid{display:grid;gap:1.2rem;margin-top:.6rem}
+.grid2{grid-template-columns:1fr 1fr}
+.grid3{grid-template-columns:1fr 1fr 1fr}
+.grid4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:1.5rem 1.8rem;box-shadow:var(--shadow);overflow-wrap:break-word;word-break:break-word}
+.card-title{font-weight:700;font-size:1.35em;color:var(--accent);margin-bottom:.5em}
+
+.badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:.9em;font-weight:600;margin-bottom:.6rem}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-orange{background:#fed7aa;color:#c2410c}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+.badge-red{background:#fee2e2;color:#991b1b}
+
+.flow-row{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;margin:.6em 0}
+.flow-node{background:var(--surface-2);border:2px solid var(--accent2);border-radius:12px;padding:.8rem 1.4rem;text-align:center;font-size:clamp(.9em,1.3vw,1.1em);font-weight:600;color:var(--text);min-width:140px;box-shadow:var(--shadow)}
+.flow-node.accent{background:var(--gradient1);color:white;border-color:var(--accent)}
+.flow-node.warm{background:linear-gradient(135deg,#FF6B00,#FF8F3A);color:white;border-color:#FF6B00}
+.flow-node.orange{background:linear-gradient(135deg,#ff6b00,#ff9500);color:white;border-color:#ff6b00}
+.flow-node.green{background:#065f46;color:white;border-color:#065f46}
+.flow-arrow{font-size:1.6em;color:var(--accent2);font-weight:700}
+.flow-label{font-size:1em;color:var(--muted);text-align:center;margin:.3em 0;font-weight:600}
+.arrow{font-size:1.3em;color:var(--accent2);font-weight:700}
+
+.gantt-wrap{overflow-x:auto;width:100%;margin-top:.6rem;display:grid;grid-template-columns:max-content 1fr;column-gap:.6rem;row-gap:.22rem;align-items:center;font-size:clamp(.85em,1.2vw,1em)}
+.gantt-row{display:contents}
+.gantt-label{min-width:0;width:auto;color:var(--text);font-weight:500}
+.gantt-track{background:var(--border);border-radius:4px;height:22px;position:relative;min-width:240px}
+.gantt-bar{position:absolute;height:100%;border-radius:4px}
+.gantt-row.gantt-sep > .gantt-label,.gantt-row.gantt-sep > .gantt-track{margin-top:.4rem}
+
+.highlight-box{background:linear-gradient(135deg,#e5eaf4,#e5f1fa);border-left:4px solid var(--accent2);border-radius:10px;padding:1.3rem 1.8rem;margin-top:1.5rem;font-size:1.1em}
+.accent-box{background:linear-gradient(135deg,#ffe2cc,#fff4ea);border-left:4px solid var(--accent3);border-radius:10px;padding:1.3rem 1.8rem;margin-top:1rem;font-size:1.1em}
+
+table{width:100%;border-collapse:collapse;font-size:clamp(.9em,1.3vw,1.05em);margin-top:.6rem}
+th{background:var(--gradient1);color:white;padding:12px 16px;text-align:left;font-weight:600}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+tr:nth-child(even) td{background:#f1f4fa}
+
+.big-number{font-size:clamp(3em,6vw,5em);font-weight:900;color:var(--accent2);line-height:1}
+.big-label{font-size:1.1em;color:var(--muted);margin-top:.3em}
+
+.slide.slide--sparse h2{font-size:2.6em}
+.slide.slide--sparse h3{font-size:1.5em}
+.slide.slide--sparse p{font-size:1.35em}
+.slide.slide--sparse ul li{font-size:1.5em;margin:.7em 0}
+.slide.slide--sparse table{font-size:1.2em}
+.slide.slide--sparse th,.slide.slide--sparse td{padding:14px 18px}
+.slide.slide--sparse .flow-node{font-size:1.3em;padding:1rem 1.6rem;min-width:170px}
+.slide.slide--sparse .flow-arrow{font-size:1.9em}
+.slide.slide--sparse .card-title{font-size:1.55em}
+.slide.slide--sparse .card{padding:1.7rem 2rem}
+.slide.slide--sparse .highlight-box,.slide.slide--sparse .accent-box{font-size:1.3em;padding:1.5rem 2rem}
+.slide.slide--sparse .gantt-wrap{font-size:1.15em}
+
+.slide.slide--very-sparse h2{font-size:3em}
+.slide.slide--very-sparse h3{font-size:1.7em}
+.slide.slide--very-sparse p{font-size:1.55em}
+.slide.slide--very-sparse ul li{font-size:1.7em;margin:.85em 0}
+.slide.slide--very-sparse table{font-size:1.4em}
+.slide.slide--very-sparse th,.slide.slide--very-sparse td{padding:16px 22px}
+.slide.slide--very-sparse .flow-node{font-size:1.55em;padding:1.2rem 1.9rem;min-width:200px}
+.slide.slide--very-sparse .flow-arrow{font-size:2.2em}
+.slide.slide--very-sparse .card-title{font-size:1.8em}
+.slide.slide--very-sparse .card{padding:1.9rem 2.3rem}
+.slide.slide--very-sparse .highlight-box,.slide.slide--very-sparse .accent-box{font-size:1.55em;padding:1.8rem 2.4rem}
+.slide.slide--very-sparse .gantt-wrap{font-size:1.3em}
+
+.attribution{position:absolute;bottom:14px;left:24px;font-size:12px;color:var(--muted);opacity:.6;pointer-events:none}
+.slide.cover .attribution,.slide.section-divider .attribution{color:rgba(255,255,255,.55)}
+.slide-number{position:absolute;bottom:14px;right:24px;font-size:14px;color:var(--muted);opacity:.7}
+.slide.cover .slide-number,.slide.section-divider .slide-number{color:rgba(255,255,255,.7)}
+
+.brand-mark{position:absolute;top:22px;right:32px;width:96px;height:auto;pointer-events:none;z-index:5}
+
+#slide-nav{position:fixed;top:0;left:0;right:0;background:rgba(0,48,135,.97);color:white;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:1000;gap:1rem;font-size:.95em}
+#slide-nav button{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:1em}
+.theme-toggle{position:fixed;top:64px;right:20px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:1.1em;box-shadow:var(--shadow)}
+body{padding-top:54px}
+
+.thumb-nav{position:fixed;left:0;top:54px;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px 10px;z-index:998;display:none}
+.thumb-nav.open{display:block}
+body.thumbs-open{padding-left:220px}
+body.thumbs-open .theme-toggle{left:240px;right:auto}
+.thumb{width:200px;height:112px;margin-bottom:10px;border:2px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;position:relative;background:#fff}
+.thumb:hover{border-color:var(--accent2)}
+.thumb.active{border-color:var(--accent3);box-shadow:0 0 0 2px rgba(255,107,0,.3)}
+.thumb-inner{width:1920px;height:1080px;transform:scale(0.1042);transform-origin:top left;pointer-events:none}
+.thumb-num{position:absolute;top:3px;left:4px;font-size:10px;font-weight:600;background:rgba(0,0,0,.65);color:#fff;padding:1px 5px;border-radius:3px;z-index:2}
+.thumb-toggle{position:fixed;top:64px;left:20px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:1.1em;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<div id="slide-nav">
+  <div><strong>CSCV2025 セキュリティ評価およびプラットフォーム刷新プロジェクト — FPT Software提案</strong></div>
+  <div><button onclick="prevSlide()">◀</button> <span id="nav-pos">1 / 60</span> <button onclick="nextSlide()">▶</button></div>
+</div>
+<button class="thumb-toggle" onclick="toggleThumbs()" title="Slides">☰</button>
+<button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+<aside class="thumb-nav" id="thumb-nav"></aside>
+<div class="deck">
+<section class="slide cover" id="s1">
+  <svg width="188" height="116" viewBox="0 0 34 21" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 1.8rem;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))"><path d="M6.68439 3.50089C4.75756 3.50089 3.12259 4.75793 2.55021 6.5013C2.53888 6.54111 2.52471 6.58093 2.51338 6.6179L2.41703 6.99331L0 17.499H6.08934C7.90849 17.499 9.45845 16.3415 10.0478 14.7204L10.2774 13.7193L12.6292 3.49805H6.68439V3.50089Z" fill="#08509F"/><path d="M18.1691 0C16.18 0 14.5025 1.34236 13.984 3.17389C13.9443 3.3104 13.9131 3.44976 13.8876 3.59196L9.88379 21H15.8286C17.866 21 19.5746 19.5951 20.0506 17.6981H20.0535L24.1196 0H18.1691Z" fill="#F27123"/><path d="M28.0555 3.50098C26.1967 3.50098 24.6099 4.6727 23.9865 6.31937C23.9553 6.40469 23.8448 6.75165 23.8448 6.75165L21.3711 17.5019H27.3159C29.3589 17.5019 31.0732 16.0885 31.5408 14.183L33.9975 3.50382H28.0555V3.50098Z" fill="#51B748"/><path d="M4.03217 7.37699C3.69781 7.6557 3.48246 7.99413 3.41728 8.26431L2.15918 13.9637H2.23002C2.62105 13.9637 2.98942 13.8243 3.32378 13.5484C3.66097 13.2726 3.87349 12.9341 3.95566 12.5445L4.27869 11.0969H6.97908C7.37011 11.0969 7.74131 10.9576 8.07851 10.6817C8.4157 10.4058 8.63105 10.0646 8.71606 9.67208L8.73023 9.60098H4.61305L4.86524 8.46055H8.76706C9.1581 8.46055 9.52646 8.32119 9.86366 8.04817C10.198 7.7723 10.4049 7.42818 10.4955 7.03855L10.5125 6.96745H5.12593C4.73489 6.96176 4.36653 7.10112 4.03217 7.37699Z" fill="white"/><path d="M31.52 7.30069C31.3047 7.08455 31.0213 6.97363 30.6813 6.97363H25.2975L25.289 7.02198C25.2691 7.12721 25.2578 7.22675 25.2578 7.3206C25.2578 7.6505 25.3683 7.92637 25.5837 8.14535C25.8019 8.3615 26.0824 8.47241 26.4252 8.47241H27.587L26.4196 13.9642H26.4932C26.8843 13.9642 27.2498 13.8248 27.5842 13.5518C27.9185 13.2759 28.1254 12.9375 28.2076 12.545L29.0718 8.46957H31.809L31.8175 8.42122C31.8374 8.32168 31.8487 8.21645 31.8487 8.11407C31.8459 7.78986 31.7354 7.51683 31.52 7.30069Z" fill="white"/><path d="M19.7101 6.96223H16.0718L16.0747 6.95654H14.5785L13.0938 13.9641H13.1646C13.5556 13.9641 13.924 13.8248 14.2555 13.5489C14.587 13.273 14.7967 12.9346 14.8789 12.545L15.1821 11.1059H18.8544C19.2454 11.1059 19.611 10.9666 19.9453 10.6935C20.2768 10.4205 20.4894 10.0792 20.5772 9.68108L20.8521 8.41551C20.8719 8.31597 20.8832 8.21359 20.8832 8.10836C20.8832 7.78414 20.7727 7.51112 20.5517 7.29213C20.3364 7.07315 20.0502 6.96223 19.7101 6.96223ZM15.7488 8.46101H19.3531L19.1038 9.60714H15.4995L15.7488 8.46101Z" fill="white"/></svg>
+  <h1>CSCV2025 セキュリティ評価<br>およびプラットフォーム刷新プロジェクト</h1>
+  <p style="color:rgba(255,255,255,.88);font-size:1.3em;margin-top:1em">FPT Software 提案書</p>
+  <p style="color:rgba(255,255,255,.65);font-size:1em;margin-top:2em">2025年5月</p>
+  <span class="slide-number">Slide 1 / 54</span>
+</section>
+<section class="slide slide--sparse" id="s2">
+  <h2>目次（1/2）</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">1. エグゼクティブサマリー</div>
+      <p>プロジェクトの背景、課題認識、推奨アプローチの概要</p>
+    </div>
+    <div class="card">
+      <div class="card-title">2. 現状分析</div>
+      <p>既存アーキテクチャの分析とCTFコンテキストの評価</p>
+    </div>
+    <div class="card">
+      <div class="card-title">3. セキュリティ評価</div>
+      <p>脆弱性分析、脅威モデル、リスク評価</p>
+    </div>
+    <div class="card">
+      <div class="card-title">4. 提案ソリューション</div>
+      <p>刷新アーキテクチャ、セキュリティ強化設計</p>
+    </div>
+    <div class="card">
+      <div class="card-title">5. 技術的アプローチ</div>
+      <p>実装戦略、DevSecOps、移行計画</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 2 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s3">
+  <h2>目次（2/2）</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">6. デモ計画</div>
+      <p>デモスコープ、ユーザージャーニー、成功基準</p>
+    </div>
+    <div class="card">
+      <div class="card-title">7. プロジェクト計画</div>
+      <p>タイムライン、体制、マイルストーン</p>
+    </div>
+    <div class="card">
+      <div class="card-title">8. 品質・コンプライアンス</div>
+      <p>QA体制、コンプライアンス対応、SLA</p>
+    </div>
+    <div class="card">
+      <div class="card-title">9. 費用内訳</div>
+      <p>コスト見積もり、ROI分析、比較検討</p>
+    </div>
+    <div class="card">
+      <div class="card-title">10. FPT Softwareの強み</div>
+      <p>選定理由、実績、差別化要素</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 3 / 60</span>
+</section>
+<section class="slide section-divider" id="s4">
+  <h2>Chapter 1</h2>
+  <p>エグゼクティブサマリー</p>
+  <span class="slide-number">Slide 4 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s5">
+  <h2>プロジェクトの背景</h2>
+  <div class="highlight-box">
+    <strong>CSCV2025（Cyber Security Capture-the-Flag 2025）</strong> は、セキュリティ評価とプラットフォーム刷新を目的としたプロジェクトです。既存の二層アーキテクチャ（Django APIゲートウェイ + PHPストレージサービス）を評価・強化し、セキュアなデモプラットフォームとして再構築します。
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">セキュリティ評価</div>
+      <p>既存システムの脆弱性診断とCTFベースの評価を実施</p>
+    </div>
+    <div class="card">
+      <div class="card-title">プラットフォーム刷新</div>
+      <p>評価結果に基づき、アーキテクチャの再設計とセキュリティ強化</p>
+    </div>
+    <div class="card">
+      <div class="card-title">デモ環境構築</div>
+      <p>刷新後のシステムをデモ環境として動作確認・提示</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 5 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s6">
+  <h2>主要課題</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ファイルアップロード脆弱性</div>
+      <p>PHPストレージサービスのファイルアップロード機能は、入力検証不足による任意コード実行の可能性を有します。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">7zipアーカイブ処理リスク</div>
+      <p>gemorroj/archive7zライブラリを使用したアーカイブ展開は、Zip Slip攻撃などのパストラバーサル脆弱性を含みます。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">認証・認可の未整備</div>
+      <p>JWT認証は実装されていますが、トークン管理、リフレッシュ、権限レベルの分離に改善余地があります。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">コンテナセキュリティ</div>
+      <p>Docker Compose環境におけるネットワーク分離、権限制限、イメージスキャンが不十分です。</p>
+    </div>
+  </div>
+  <div class="accent-box">
+    <strong>CTFフラグ:</strong> 既存システムには <code>CSCV2025{for_testing}</code> のテストフラグが含まれており、セキュリティ評価の起点となります。
+  </div>
+  <span class="slide-number">Slide 6 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s7">
+  <h2>FPT Softwareの推奨アプローチ</h2>
+  <div class="flow-row">
+    <div class="flow-node">現状分析</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">脆弱性評価</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">再設計</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">実装・検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">デモ提示</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">ゼロトラスト設計</div>
+      <p>全ての通信を暗号化し、最小権限の原則でアクセス制御を実装</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DevSecOps統合</div>
+      <p>CI/CDパイプラインへのセキュリティチェック統合、自動スキャン</p>
+    </div>
+    <div class="card">
+      <div class="card-title">継続的監視</div>
+      <p>リアルタイムのログ監視、異常検知、インシデントレスポンス体制</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 7 / 60</span>
+</section>
+<section class="slide section-divider" id="s8">
+  <h2>Chapter 2</h2>
+  <p>現状分析</p>
+  <span class="slide-number">Slide 8 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s9">
+  <h2>既存アーキテクチャ</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: Django API</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">App2: PHP Storage</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">ファイルストレージ</div>
+  </div>
+  <table style="margin-top:1.5rem">
+    <tr><th>コンポーネント</th><th>技術スタック</th><th>役割</th><th>ポート</th></tr>
+    <tr><td>App1</td><td>Python / Django / uWSGI</td><td>REST APIゲートウェイ、JWT認証</td><td>8000</td></tr>
+    <tr><td>App2</td><td>PHP / Apache</td><td>ファイルストレージ、7zipアーカイブ展開</td><td>80</td></tr>
+    <tr><td>Orchestration</td><td>Docker Compose</td><td>コンテナオーケストレーション</td><td>—</td></tr>
+  </table>
+  <div class="highlight-box">
+    <strong>注意:</strong> App1は <code>STORAGE_URL=http://app2</code> でApp2へHTTP（暗号化なし）で接続しています。
+  </div>
+  <span class="slide-number">Slide 9 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s10">
+  <h2>App1: Django APIゲートウェイ 詳細</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">技術構成</div>
+      <ul>
+        <li>Django REST Framework</li>
+        <li>JWT認証（SimpleJWT）</li>
+        <li>uWSGIサーバー</li>
+        <li>Dockerコンテナ化</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">主要機能</div>
+      <ul>
+        <li>ユーザー認証・認可</li>
+        <li>ファイルアップロードAPI</li>
+        <li>ストレージサービス連携</li>
+        <li>ヘルスチェックエンドポイント</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">既知の懸念事項</div>
+      <ul>
+        <li>内部通信の暗号化なし</li>
+        <li>リクエスト率制限の未確認</li>
+        <li>CORS設定の確認が必要</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">改善候補</div>
+      <ul>
+        <li>mTLSによるサービス間通信</li>
+        <li>レートリミッティングの実装</li>
+        <li>詳細なログ記録と監視</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 10 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s11">
+  <h2>App2: PHPストレージサービス 詳細</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">技術構成</div>
+      <ul>
+        <li>PHP + Apache</li>
+        <li>gemorroj/archive7zライブラリ</li>
+        <li>ファイルシステムストレージ</li>
+        <li>Dockerコンテナ化</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">主要機能</div>
+      <ul>
+        <li>ファイルアップロード処理</li>
+        <li>7zip/ZIP/RARアーカイブ展開</li>
+        <li>フラグファイルのマウント</li>
+        <li>ヘルスチェック（未実装）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">高リスク項目</div>
+      <ul>
+        <li>ファイル名検証の不備</li>
+        <li>パストラバーサル可能性</li>
+        <li>アーカイブ内の悪意あるファイル</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">改善候補</div>
+      <ul>
+        <li>ファイルタイプ検証の強化</li>
+        <li>サンドボックス化された展開</li>
+        <li>コンテンツセキュリティポリシー</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 11 / 60</span>
+</section>
+<section class="slide section-divider" id="s12">
+  <h2>Chapter 3</h2>
+  <p>セキュリティ評価</p>
+  <span class="slide-number">Slide 12 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s13">
+  <h2>脆弱性評価サマリー</h2>
+  <table>
+    <tr><th>ID</th><th>脆弱性</th><th>CVE</th><th>重大度</th><th>影響</th></tr>
+    <tr><td>VULN-01</td><td>ファイルアップロードによる任意コード実行</td><td>CWE-94</td><td><span class="badge badge-red">Critical</span></td><td>完全なシステム乗っ取り</td></tr>
+    <tr><td>VULN-02</td><td>Zip Slip — パス TRAVERSAL</td><td>CWE-22</td><td><span class="badge badge-red">Critical</span></td><td>ファイルシステム書き込み</td></tr>
+    <tr><td>VULN-03</td><td>サービス間通信の平文送信</td><td>CWE-319</td><td><span class="badge badge-orange">High</span></td><td>中間者攻撃</td></tr>
+    <tr><td>VULN-04</td><td>JWTトークン管理の不備</td><td>CWE-613</td><td><span class="badge badge-orange">High</span></td><td>認証バイパス</td></tr>
+    <tr><td>VULN-05</td><td>コンテナ権限の過剰付与</td><td>CWE-250</td><td><span class="badge badge-orange">High</span></td><td>コンテナエスケープ</td></tr>
+    <tr><td>VULN-06</td><td>インメモリフラグファイルの露出</td><td>CWE-538</td><td><span class="badge badge-blue">Medium</span></td><td>機密情報漏洩</td></tr>
+  </table>
+  <span class="slide-number">Slide 13 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s14">
+  <h2>脅威モデル — STRIDE（1/2）</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Spoofing（なりすまし）</div>
+      <ul>
+        <li>JWTトークンの改ざん・再利用</li>
+        <li>サービス間通信のなりすまし</li>
+        <li>管理APIの未認証アクセス</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Tampering（改ざん）</div>
+      <ul>
+        <li>アップロードファイルの改ざん</li>
+        <li>アーカイブ内の悪意あるコード</li>
+        <li>設定ファイルの書き換え</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Repudiation（否認）</div>
+      <ul>
+        <li>監査ログの不備</li>
+        <li>操作履歴の追跡不能</li>
+        <li>ログの改ざん可能性</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 14 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s15">
+  <h2>脅威モデル — STRIDE（2/2）</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Information Disclosure（情報漏洩）</div>
+      <ul>
+        <li>フラグファイルの直接アクセス</li>
+        <li>平文通信によるデータ漏洩</li>
+        <li>エラーメッセージの詳細漏洩</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">DoS（拒否）</div>
+      <ul>
+        <li>Zip Bomb攻撃</li>
+        <li>大規模ファイルアップロード</li>
+        <li>リソース枯渇攻撃</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Elevation of Privilege（権限昇格）</div>
+      <ul>
+        <li>コンテナ内での権限昇格</li>
+        <li>ホストファイルシステムアクセス</li>
+        <li>特権コマンドの実行</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 15 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s16">
+  <h2>攻撃シナリオ — ファイルアップロード経由</h2>
+  <div class="flow-row">
+    <div class="flow-node">攻撃者</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">悪意あるZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: API</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">App2: 展開</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node" style="border-color:#dc2626;background:#fee2e2">ホストFS書き込み</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">Step 1: 悪意あるZIP作成</div>
+      <p><code>../../etc/cron.d/malicious</code> を含むZIPファイルを生成</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 2: アップロード・展開</div>
+      <p>App2のarchive7zライブラリが検証不足でパスをそのまま展開</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 3: コード実行</div>
+      <p>書き込まれたファイルが実行され、システム乗っ取りに成功</p>
+    </div>
+  </div>
+  <div class="accent-box">
+    <strong>CTF関連:</strong> この攻撃シナリオは、<code>flag.txt</code> の読み取り（情報漏洩）と <code>/flag.txt</code> のマウント点への書き込み（権限昇格）の両方の経路を持ちます。
+  </div>
+  <span class="slide-number">Slide 16 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s17">
+  <h2>リスク評価マトリックス</h2>
+  <table>
+    <tr><th>リスク</th><th>発生確率</th><th>影響度</th><th>リスクスコア</th><th>ステータス</th></tr>
+    <tr><td>ファイルアップロード脆弱性</td><td><span class="badge badge-red">高</span></td><td><span class="badge badge-red">甚大</span></td><td><strong>25</strong></td><td>即座に対応必要</td></tr>
+    <tr><td>Zip Slip攻撃</td><td><span class="badge badge-red">高</span></td><td><span class="badge badge-red">甚大</span></td><td><strong>25</strong></td><td>即座に対応必要</td></tr>
+    <tr><td>平文通信</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">大</span></td><td><strong>12</strong></td><td>早期対応</td></tr>
+    <tr><td>JWT管理不備</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">大</span></td><td><strong>12</strong></td><td>早期対応</td></tr>
+    <tr><td>Zip Bomb</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-orange">大</span></td><td><strong>8</strong></td><td>計画対応</td></tr>
+    <tr><td>コンテナ権限</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-orange">大</span></td><td><strong>8</strong></td><td>計画対応</td></tr>
+  </table>
+  <div class="highlight-box">
+    <strong>優先順位:</strong> ファイルアップロードとZip Slipの2つのCriticalリスクを最優先で解消し、その後平文通信とJWT管理のHighリスクに対処します。
+  </div>
+  <span class="slide-number">Slide 17 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s18">
+  <h2>コンテナセキュリティ評価</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">現在の状態</div>
+      <ul>
+        <li>Docker Composeによる単一ネットワーク</li>
+        <li>ルート権限でのコンテナ実行可能性</li>
+        <li>ネットワーク分離の欠如</li>
+        <li>イメージスキャンの未実施</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">推奨改善</div>
+      <ul>
+        <li>非ルートユーザーでの実行</li>
+        <li>サービス別ネットワーク分離</li>
+        <li>Trivyによるイメージスキャン</li>
+        <li>リードオンリールートファイルシステム</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Docker Compose 問題点</div>
+      <ul>
+        <li>フラグファイルのボリュームマウント</li>
+        <li>サービス間HTTP通信</li>
+        <li>ポート公開範囲の広さ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">DevSecOps統合</div>
+      <ul>
+        <li>CI/CDへのセキュリティゲート</li>
+        <li>SAST/DASTの自動化</li>
+        <li>依存関係スキャン</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 18 / 60</span>
+</section>
+<section class="slide section-divider" id="s19">
+  <h2>Chapter 4</h2>
+  <p>提案ソリューション</p>
+  <span class="slide-number">Slide 19 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s20">
+  <h2>刷新アーキテクチャ概要</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">WAF / LB</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">APIゲートウェイ</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">マイクロサービス</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">WAF / ロードバランサー</div>
+      <p>OWASPルールセット、レートリミッティング、DDoS防御</p>
+    </div>
+    <div class="card">
+      <div class="card-title">APIゲートウェイ</div>
+      <p>認証・認可、リクエスト検証、APIバージョニング</p>
+    </div>
+    <div class="card">
+      <div class="card-title">マイクロサービス</div>
+      <p>Authentication、File Processing、Storage、Monitoring</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>設計原則:</strong> ゼロトラスト、最小権限、ディフェンスインディプス、Fail-Safeデフォルト
+  </div>
+  <span class="slide-number">Slide 20 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s21">
+  <h2>セキュリティ強化設計</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ファイルアップロード保護</div>
+      <ul>
+        <li>ファイルタイプ検証（MIME + マジックナンバー）</li>
+        <li>ファイルサイズ制限（100MB上限）</li>
+        <li>ランダムファイル名生成</li>
+        <li>サンドボックス化されたストレージ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">アーカイブ展開保護</div>
+      <ul>
+        <li>展開先の事前検証</li>
+        <li>パス TRAVERSAL チェック</li>
+        <li>展開サイズ制限（Zip Bomb対策）</li>
+        <li>展開後のウイルススキャン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">通信セキュリティ</div>
+      <ul>
+        <li>mTLSによるサービス間通信</li>
+        <li>TLS 1.3による外部通信</li>
+        <li>HSTS + CSPヘッダー</li>
+        <li>秘密鍵の暗号化管理</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">認証・認可強化</div>
+      <ul>
+        <li>JWT轮换 + リフレッシュトークン</li>
+        <li>RBACによる権限分離</li>
+        <li>MFA対応</li>
+        <li>セッション管理の強化</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 21 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s22">
+  <h2>コンテナセキュリティ強化</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">イメージセキュリティ</div>
+      <p>最小ベースイメージ、Trivyスキャン、署名検証、SBOM生成</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ランタイム保護</div>
+      <p>非ルート実行、リードオンリーFS、Capabilities制限、Seccompプロファイル</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ネットワーク分離</div>
+      <p>サービス別ネットワーク、Network Policy、ingress/egress制限</p>
+    </div>
+    <div class="card">
+      <div class="card-title">秘密鍵管理</div>
+      <p>Vault統合、自動轮换、暗号化ストレージ、アクセス監査</p>
+    </div>
+    <div class="card">
+      <div class="card-title">監査・ログ</div>
+      <p>集中ログ管理、Immutableログ、リアルタイムアラート、SIEM連携</p>
+    </div>
+    <div class="card">
+      <div class="card-title">バックアップ</div>
+      <p>自動バックアップ、暗号化保存、復旧テスト、バージョニング</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 22 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s23">
+  <h2>DevSecOpsパイプライン</h2>
+  <div class="flow-row">
+    <div class="flow-node">コードコミット</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">SAST</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">依存関係スキャン</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">コンテナビルド</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">イメージスキャン</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">デプロイ</div>
+  </div>
+  <div class="card-grid grid2" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">SAST（静的アプリケーションセキュリティテスト）</div>
+      <p>CodeQL、Bandit（Python）、PHPStan（PHP）によるコードスキャン</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DAST（動的アプリケーションセキュリティテスト）</div>
+      <p>OWASP ZAP、Burp Suiteによる自動テスト、毎回のデプロイ前に実行</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>セキュリティゲート:</strong> Critical/High脆弱性が検出された場合、パイプラインを自動的に停止し、開発者に通知します。
+  </div>
+  <span class="slide-number">Slide 23 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s24">
+  <h2>モニタリング・観測性</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ログ管理</div>
+      <ul>
+        <li>ELK Stack（Elasticsearch, Logstash, Kibana）</li>
+        <li>構造化ログ出力（JSON形式）</li>
+        <li>ログの集中収集・分析</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">メトリクス</div>
+      <ul>
+        <li>Prometheus + Grafanaダッシュボード</li>
+        <li>API応答時間、エラー率、リクエスト数</li>
+        <li>リソース使用率（CPU、メモリ、ディスク）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">トレーシング</div>
+      <ul>
+        <li>Jaegerによる分散トレーシング</li>
+        <li>サービス間のリクエスト追跡</li>
+        <li>ボトルネック特定</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">アラート</div>
+      <ul>
+        <li>PagerDuty / Slack統合</li>
+        <li>カスタムアラートルール</li>
+        <li>エスカレーションポリシー</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 24 / 60</span>
+</section>
+<section class="slide section-divider" id="s25">
+  <h2>Chapter 5</h2>
+  <p>技術的アプローチ</p>
+  <span class="slide-number">Slide 25 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s26">
+  <h2>実装フェーズ</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Phase 1: セキュリティ評価（Month 1）</div>
+      <ul>
+        <li>既存システムの完全な脆弱性診断</li>
+        <li>CTFシナリオの特定とドキュメント化</li>
+        <li>脅威モデルの構築</li>
+        <li>セキュリティ評価レポート</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 2: アーキテクチャ設計（Month 2）</div>
+      <ul>
+        <li>刷新アーキテクチャの詳細設計</li>
+        <li>セキュリティパターン適用</li>
+        <li>DevSecOpsパイプライン設計</li>
+        <li>レビューと承認</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 3: 実装（Month 3-4）</div>
+      <ul>
+        <li>マイクロサービスの実装</li>
+        <li>セキュリティ機能の実装</li>
+        <li>DevSecOpsパイプライン構築</li>
+        <li>ユニット・統合テスト</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 4: 検証・デモ（Month 5）</div>
+      <ul>
+        <li>ペネトレーションテスト</li>
+        <li>パフォーマンスベンチマーク</li>
+        <li>デモ環境の構築</li>
+        <li>最終プレゼンテーション</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 26 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s27">
+  <h2>技術スタック選定</h2>
+  <table>
+    <tr><th>レイヤー</th><th>既存</th><th>刷新後</th><th>選定理由</th></tr>
+    <tr><td>APIフレームワーク</td><td>Django REST</td><td>Django REST + FastAPI</td><td>既存資産の活用 + 高性能エンドポイント</td></tr>
+    <tr><td>ストレージサービス</td><td>PHP/Apache</td><td>Go microservice</td><td>型安全、並列処理、メモリ安全性</td></tr>
+    <tr><td>認証</td><td>SimpleJWT</td><td>Keycloak</td><td>標準的なIAM、MFA、SSO対応</td></tr>
+    <tr><td>通信</td><td>HTTP</td><td>mTLS + gRPC</td><td>相互認証、高性能</td></tr>
+    <tr><td>コンテナ</td><td>Docker Compose</td><td>Kubernetes</td><td>スケーラビリティ、自己修復</td></tr>
+    <tr><td>監視</td><td>なし</td><td>Prometheus + Grafana</td><td>業界標準の観測性スタック</td></tr>
+  </table>
+  <span class="slide-number">Slide 27 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s28">
+  <h2>移行戦略</h2>
+  <div class="flow-row">
+    <div class="flow-node">並行構築</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">段階的切り替え</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">完全移行</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">旧システム退役</div>
+  </div>
+  <div class="card-grid grid3" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">ステップ 1: 並行構築</div>
+      <p>新システムを既存システムと並行して構築。データ同期を確保</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 2: 段階的切り替え</div>
+      <p>機能ごとに新旧を切り替え。APIゲートウェイでルーティング制御</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 3: 完全移行</div>
+      <p>全てのトラフィックを新システムへ。ロールバック計画を保持</p>
+    </div>
+  </div>
+  <div class="accent-box">
+    <strong>リスク低減:</strong> 各フェーズでスモークテストとパフォーマンス検証を実施し、問題があれば即座にロールバックします。
+  </div>
+  <span class="slide-number">Slide 28 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s29">
+  <h2>ファイルアップロード保護 — 実装詳細</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">入力検証層</div>
+      <ul>
+        <li>MIMEタイプ検証（Content-Type + マジックナンバー）</li>
+        <li>ファイル拡張子ホワイトリスト</li>
+        <li>ファイルサイズ制限（100MB）</li>
+        <li>エンコーディング検証</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">展開保護層</div>
+      <ul>
+        <li>展開先の事前検証（Chroot/Jail）</li>
+        <li>各ファイルのパス検証（../ の検出）</li>
+        <li>展開サイズ制限（1GB上限）</li>
+        <li>ファイル数制限（1000ファイル上限）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">ストレージ保護層</div>
+      <ul>
+        <li>ランダムUUIDベースのファイル名</li>
+        <li>隔離されたストレージボリューム</li>
+        <li>ファイルパーミッションの制限</li>
+        <li>暗号化ストレージ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">監視層</div>
+      <ul>
+        <li>アップロードイベントのログ記録</li>
+        <li>異常パターンの検出</li>
+        <li>リアルタイムアラート</li>
+        <li>定期監査レポート</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 29 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s30">
+  <h2>テスト戦略</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ユニットテスト</div>
+      <ul>
+        <li>各コンポーネントの個別テスト</li>
+        <li>カバレッジ目標: 80%以上</li>
+        <li>CI/CDでの自動実行</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">統合テスト</div>
+      <ul>
+        <li>サービス間の連携テスト</li>
+        <li>APIエンドポイントの全テスト</li>
+        <li>データフローの検証</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティテスト</div>
+      <ul>
+        <li>SAST/DASTの自動実行</li>
+        <li>ペネトレーションテスト</li>
+        <li>脆弱性スキャン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">パフォーマンステスト</div>
+      <ul>
+        <li>負荷テスト（1000 RPS目標）</li>
+        <li>ストレステスト</li>
+        <li>耐久テスト（24時間）</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 30 / 60</span>
+</section>
+<section class="slide section-divider" id="s31">
+  <h2>Chapter 6</h2>
+  <p>デモ計画</p>
+  <span class="slide-number">Slide 31 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s32">
+  <h2>デモスコープ</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">インスコープ</div>
+      <ul>
+        <li>刷新後のセキュアなファイルアップロード</li>
+        <li>アーカイブ展開のサンドボックス化</li>
+        <li>JWT認証とRBACの実演</li>
+        <li>DevSecOpsパイプラインのデモンストレーション</li>
+        <li>リアルタイム監視ダッシュボード</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">アウトオブスコープ</div>
+      <ul>
+        <li>本番環境のデプロイ</li>
+        <li>大規模負荷テスト</li>
+        <li>マルチテナント対応</li>
+        <li>モバイルクライアント</li>
+      </ul>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>デモ期間:</strong> 2025年7月 — 2025年9月（3ヶ月）
+  </div>
+  <span class="slide-number">Slide 32 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s33">
+  <h2>ユーザージャーニー</h2>
+  <div class="flow-row">
+    <div class="flow-node">ログイン</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">ファイルアップロード</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">セキュリティ検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">展開・保存</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">結果確認</div>
+  </div>
+  <div class="card-grid grid2" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">ステップ 1-2: 認証とアップロード</div>
+      <p>ユーザーが認証后、セキュアなAPIを通じてファイルをアップロード。入力検証がリアルタイムで実行されます。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 3-4: 検証と処理</div>
+      <p>アップロードされたファイルはサンドボックス内で検証・展開され、結果が暗号化されて保存されます。</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 33 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s34">
+  <h2>「Wow」モーメント</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">リアルタイム脆弱性検出</div>
+      <p>悪意あるファイルをアップロードすると、システムがリアルタイムで検出し、ブロックする様子をデモ</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DevSecOpsパイプライン</div>
+      <p>コードコミットからデプロイまでの全自動化プロセスをライブデモ。セキュリティチェックが自動的に実行される様子を確認</p>
+    </div>
+    <div class="card">
+      <div class="card-title">監視ダッシュボード</div>
+      <p>Grafanaダッシュボードで、システムの状態、セキュリティイベント、パフォーマンスメトリクスをリアルタイムで可視化</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 34 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s35">
+  <h2>成功基準</h2>
+  <table>
+    <tr><th>KPI</th><th>目標値</th><th>測定方法</th><th>責任者</th></tr>
+    <tr><td>セキュリティスコア</td><td>90点以上</td><td>OWASP ZAPレポート</td><td>セキュリティエンジニア</td></tr>
+    <tr><td>API応答時間</td><td>&lt; 200ms</td><td>Prometheusメトリクス</td><td>バックエンドエンジニア</td></tr>
+    <tr><td>テストカバレッジ</td><td>80%以上</td><td>Coverageレポート</td><td>QAエンジニア</td></tr>
+    <tr><td>デモ成功率</td><td>100%</td><td>デモシナリオチェックリスト</td><td>プロジェクトマネージャー</td></tr>
+    <tr><td>脆弱性残数</td><td>Critical: 0, High: 0</td><td>ペネトレーションテスト</td><td>セキュリティエンジニア</td></tr>
+  </table>
+  <span class="slide-number">Slide 35 / 60</span>
+</section>
+
+<section class="slide section-divider" id="s36">
+  <h2>Chapter 7</h2>
+  <p>プロジェクト計画</p>
+  <span class="slide-number">Slide 36 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s37">
+  <h2>プロジェクトタイムライン</h2>
+  <div class="gantt-wrap">
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 1: セキュリティ評価</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:0%;width:20%;background:#003087"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 2: アーキテクチャ設計</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:20%;width:20%;background:#0072CE"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 3a: 実装（前半）</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:40%;width:20%;background:#FF6B00"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 3b: 実装（後半）</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:60%;width:20%;background:#FF6B00"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 4: 検証・デモ</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:80%;width:20%;background:#065f46"></div></div>
+    </div>
+    <div class="gantt-row gantt-sep">
+      <span class="gantt-label" style="color:#dc2626;font-weight:700">M1: 評価完了</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:19%;width:1%;background:#dc2626"></div></div>
+    </div>
+    <div class="gantt-row gantt-sep">
+      <span class="gantt-label" style="color:#dc2626;font-weight:700">M2: 設計承認</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:39%;width:1%;background:#dc2626"></div></div>
+    </div>
+    <div class="gantt-row gantt-sep">
+      <span class="gantt-label" style="color:#dc2626;font-weight:700">M3: デモ完了</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:99%;width:1%;background:#dc2626"></div></div>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>プロジェクト期間:</strong> 2025年7月 — 2025年12月（6ヶ月）
+  </div>
+  <span class="slide-number">Slide 37 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s38">
+  <h2>マイルストーン</h2>
+  <table>
+    <tr><th>マイルストーン</th><th>ターゲット日</th><th>完了基準</th><th>ステークホルダー</th></tr>
+    <tr><td>M1: セキュリティ評価完了</td><td>2025-08-15</td><td>評価レポート提出、承認</td><td>セキュリティチーム</td></tr>
+    <tr><td>M2: 設計承認</td><td>2025-09-30</td><td>アーキテクチャ設計書の承認</td><td>アーキテクト、ステークホルダー</td></tr>
+    <tr><td>M3: 実装完了</td><td>2025-11-15</td><td>全機能の実装、単体テスト完了</td><td>開発チーム</td></tr>
+    <tr><td>M4: 検証完了</td><td>2025-12-01</td><td>ペネテスト完了、Critical/High脆弱性ゼロ</td><td>セキュリティチーム</td></tr>
+    <tr><td>M5: デモ完了</td><td>2025-12-15</td><td>デモシナリオの全成功</td><td>プロジェクト全体</td></tr>
+  </table>
+  <span class="slide-number">Slide 38 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s39">
+  <h2>プロジェクト体制</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">プロジェクトマネージャー</div>
+      <p>プロジェクト全体の計画、進行管理、リスク管理、ステークホルダーとの調整</p>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティアーキテクト</div>
+      <p>セキュリティ設計、脅威モデル、脆弱性評価、セキュリティガイドライン策定</p>
+    </div>
+    <div class="card">
+      <div class="card-title">バックエンドエンジニア × 2</div>
+      <p>APIゲートウェイ、マイクロサービスの実装、テストコードの作成</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DevOpsエンジニア</div>
+      <p>CI/CDパイプライン、コンテナ化、監視インフラの構築</p>
+    </div>
+    <div class="card">
+      <div class="card-title">QAエンジニア</div>
+      <p>テスト計画、テストケース作成、自動化テスト、品質保証</p>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティエンジニア</div>
+      <p>ペネトレーションテスト、脆弱性スキャン、セキュリティ監査</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 39 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s40">
+  <h2>RACIマトリックス</h2>
+  <table>
+    <tr><th>活動</th><th>PM</th><th>セキュリティ</th><th>開発</th><th>DevOps</th><th>ステークホルダー</th></tr>
+    <tr><td>プロジェクト計画</td><td>R/A</td><td>C</td><td>I</td><td>I</td><td>I</td></tr>
+    <tr><td>セキュリティ評価</td><td>I</td><td>R/A</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>アーキテクチャ設計</td><td>I</td><td>R</td><td>C</td><td>C</td><td>A</td></tr>
+    <tr><td>実装</td><td>I</td><td>C</td><td>R/A</td><td>C</td><td>I</td></tr>
+    <tr><td>CI/CD構築</td><td>I</td><td>C</td><td>I</td><td>R/A</td><td>I</td></tr>
+    <tr><td>テスト</td><td>I</td><td>C</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>デモ</td><td>R/A</td><td>C</td><td>C</td><td>C</td><td>I</td></tr>
+  </table>
+  <p style="margin-top:1rem;font-size:0.9em;color:var(--muted)">R=Responsible, A=Accountable, C=Consulted, I=Informed</p>
+  <span class="slide-number">Slide 40 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s41">
+  <h2>リスクレジスター</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>緩和策</th></tr>
+    <tr><td>R1</td><td>スケジュール遅延</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-red">大</span></td><td>高</td><td>バッファ期間、週次チェック</td></tr>
+    <tr><td>R2</td><td>技術的複雑さ</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">中</span></td><td>中</td><td>プロトタイプ、技術調査フェーズ</td></tr>
+    <tr><td>R3</td><td>リソース不足</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-red">大</span></td><td>中</td><td>リソース確保計画、スペア人員</td></tr>
+    <tr><td>R4</td><td>要件変更</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">中</span></td><td>中</td><td>変更管理プロセス、アジャイル対応</td></tr>
+    <tr><td>R5</td><td>セキュリティインシデント</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-red">甚大</span></td><td>高</td><td>インシデントレスポンス計画</td></tr>
+  </table>
+  <span class="slide-number">Slide 41 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s42">
+  <h2>コミュニケーション計画</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">週次ステークホルダー会議</div>
+      <ul>
+        <li>進捗報告、課題共有</li>
+        <li>意思決定事項の確認</li>
+        <li>次の週の計画</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">日次スタンドアップ</div>
+      <ul>
+        <li>チーム内での進捗共有</li>
+        <li>課題の早期発見</li>
+        <li>タスクの調整</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">マイルストーンレビュー</div>
+      <ul>
+        <li>成果物のレビュー</li>
+        <li>次のフェーズへの準備</li>
+        <li>ステークホルダー承認</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">緊急連絡チャネル</div>
+      <ul>
+        <li>Slack緊急チャンネル</li>
+        <li>PagerDutyアラート</li>
+        <li>24時間対応体制</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 42 / 60</span>
+</section>
+<section class="slide section-divider" id="s43">
+  <h2>Chapter 8</h2>
+  <p>品質・コンプライアンス</p>
+  <span class="slide-number">Slide 43 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s44">
+  <h2>品質保証体制</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">コード品質</div>
+      <ul>
+        <li>コードレビュー必須</li>
+        <li>静的解析の自動実行</li>
+        <li>テストカバレッジ80%以上</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティ品質</div>
+      <ul>
+        <li>SAST/DASTの自動実行</li>
+        <li>定期的なペネトレーションテスト</li>
+        <li>依存関係スキャン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">パフォーマンス品質</div>
+      <ul>
+        <li>負荷テストの定期実施</li>
+        <li>パフォーマンスベンチマーク</li>
+        <li>リソース使用率の監視</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 44 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s45">
+  <h2>コンプライアンス対応</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ISO 27001</div>
+      <ul>
+        <li>情報セキュリティ管理システムの構築</li>
+        <li>リスクアセスメントの定期的な実施</li>
+        <li>内部監査の実施</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">GDPR / 個人情報保護法</div>
+      <ul>
+        <li>個人データの保護措置</li>
+        <li>データ主体の権利対応</li>
+        <li>データ漏洩時の報告体制</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">OWASP Top 10</div>
+      <ul>
+        <li>OWASP Top 10への対応</li>
+        <li>定期的な脆弱性スキャン</li>
+        <li>セキュリティトレーニング</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">SOC 2 Type II</div>
+      <ul>
+        <li>セキュリティ管理</li>
+        <li>可用性管理</li>
+        <li>機密性管理</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 45 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s46">
+  <h2>SLAとサポート体制</h2>
+  <table>
+    <tr><th>項目</th><th>目標値</th><th>測定方法</th></tr>
+    <tr><td>システム稼働率</td><td>99.9%</td><td>月間稼働時間の計算</td></tr>
+    <tr><td>インシデント対応時間</td><td>Critical: 1時間以内</td><td>インシデント発生から対応開始までの時間</td></tr>
+    <tr><td>脆弱性修正期間</td><td>Critical: 24時間以内</td><td>脆弱性情報の入手から修正完了までの時間</td></tr>
+    <tr><td>バックアップ復旧時間</td><td>4時間以内</td><td>バックアップからの復旧テスト</td></tr>
+    <tr><td>サポート対応時間</td><td>ビジネス時間: 2時間以内</td><td>問い合わせから初回対応までの時間</td></tr>
+  </table>
+  <span class="slide-number">Slide 46 / 60</span>
+</section>
+<section class="slide section-divider" id="s47">
+  <h2>Chapter 9</h2>
+  <p>費用内訳</p>
+  <span class="slide-number">Slide 47 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s48">
+  <h2>コスト見積もり</h2>
+  <table>
+    <tr><th>カテゴリ</th><th>詳細</th><th>人月</th><th>金額（万円）</th></tr>
+    <tr><td>セキュリティ評価</td><td>脆弱性診断、脅威モデル、レポート</td><td>2</td><td>320</td></tr>
+    <tr><td>アーキテクチャ設計</td><td>システム設計、セキュリティ設計</td><td>2</td><td>360</td></tr>
+    <tr><td>実装</td><td>バックエンド、DevOps、テスト</td><td>8</td><td>1,280</td></tr>
+    <tr><td>検証・デモ</td><td>ペネテスト、デモ環境構築</td><td>2</td><td>320</td></tr>
+    <tr><td>プロジェクト管理</td><td>計画、進行管理、報告</td><td>3</td><td>270</td></tr>
+    <tr><td>インフラコスト</td><td>クラウド環境、ツールライセンス</td><td>—</td><td>150</td></tr>
+    <tr><td>計</td><td>6ヶ月プロジェクト</td><td>17</td><td><strong>2,700</strong></td></tr>
+  </table>
+  <span class="slide-number">Slide 48 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s49">
+  <h2>ROI分析</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">セキュリティリスク低減</div>
+      <p>データ漏洩リスクを90%削減。1件のインシデントで数千万円の損失を防ぐ</p>
+    </div>
+    <div class="card">
+      <div class="card-title">運用効率向上</div>
+      <p>自動化により運用コストを40%削減。インシデント対応時間を70%短縮</p>
+    </div>
+    <div class="card">
+      <div class="card-title">コンプライアンス対応</div>
+      <p>規制違反リスクの低減。認証取得によるビジネス機会の拡大</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>投資対効果:</strong> 投資額の3倍の年間節約効果が期待できます（セキュリティインシデント防止、運用効率向上、コンプライアンスコスト削減）
+  </div>
+  <span class="slide-number">Slide 49 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s50">
+  <h2>比較検討</h2>
+  <table>
+    <tr><th>項目</th><th>FPT Software提案</th><th>他社A</th><th>他社B</th></tr>
+    <tr><td>セキュリティ専門性</td><td><span class="badge badge-green">優れ</span></td><td><span class="badge badge-blue">標準</span></td><td><span class="badge badge-orange">不十分</span></td></tr>
+    <tr><td>DevSecOps統合</td><td><span class="badge badge-green">優れ</span></td><td><span class="badge badge-blue">標準</span></td><td><span class="badge badge-red">なし</span></td></tr>
+    <tr><td>コスト効率</td><td><span class="badge badge-green">優れ</span></td><td><span class="badge badge-orange">高価</span></td><td><span class="badge badge-blue">標準</span></td></tr>
+    <tr><td>実績</td><td><span class="badge badge-green">豊富</span></td><td><span class="badge badge-blue">標準</span></td><td><span class="badge badge-blue">標準</span></td></tr>
+    <tr><td>サポート体制</td><td><span class="badge badge-green">24/7</span></td><td><span class="badge badge-blue">ビジネス時間</span></td><td><span class="badge badge-red">なし</span></td></tr>
+  </table>
+  <span class="slide-number">Slide 50 / 60</span>
+</section>
+<section class="slide section-divider" id="s51">
+  <h2>Chapter 10</h2>
+  <p>FPT Softwareの強み</p>
+  <span class="slide-number">Slide 51 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s52">
+  <h2>なぜFPT Softwareなのか</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">グローバルな規模</div>
+      <p>30,000名以上のエンジニア、150の国と地域で事業展開。大規模プロジェクトの実績豊富</p>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティ専門性</div>
+      <p>CISSP、CEH、OSCPなど有資格者が多数在籍。専門的なセキュリティ評価と実装が可能です</p>
+    </div>
+    <div class="card">
+      <div class="card-title">日本の市場理解</div>
+      <p>日本市場での豊富な実績。日本語でのコミュニケーションとサポート体制を確立</p>
+    </div>
+    <div class="card">
+      <div class="card-title">アジャイル開発</div>
+      <p>アジャイル開発の豊富な経験。迅速な変化への対応と高品質な納品を実現</p>
+    </div>
+    <div class="card">
+      <div class="card-title">コスト効率</div>
+      <p>グローバルなリソースを活用した効率的なプロジェクト執行。コスト競争力のある提案</p>
+    </div>
+    <div class="card">
+      <div class="card-title">継続的サポート</div>
+      <p>プロジェクト完了後も継続的なサポートを提供。24/7のサポート体制</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 52 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s53">
+  <h2>類似プロジェクト実績</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">大手金融機関 — セキュリティ刷新</div>
+      <p>Core banking systemのセキュリティ強化。脆弱性を95%削減し、PCI DSS認証を取得。プロジェクト期間12ヶ月。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">製造業 — DevSecOps導入</div>
+      <p>CI/CDパイプラインへのセキュリティ統合。デプロイ頻度を週1回から日1回に向上。セキュリティインシデントを80%削減。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">公共機関 — クラウド移行</div>
+      <p>オンプレミス環境からクラウドへのセキュア移行。ゼロダウンタイムで移行完了。コストを40%削減。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ECプラットフォーム — 脆弱性対策</div>
+      <p>ECサイトのセキュリティ評価と強化。OWASP Top 10への完全対応。年間のセキュリティインシデントをゼロに。</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 53 / 60</span>
+</section>
+<section class="slide section-divider" id="s54">
+  <h2>Chapter 11</h2>
+  <p>次のステップ</p>
+  <span class="slide-number">Slide 54 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s55">
+  <h2>次のステップ</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">ステップ 1: 契約締結</div>
+      <p>提案内容の確認、契約条件の合意、プロジェクト開始</p>
+      <ul>
+        <li>提案書の承認</li>
+        <li>契約書の作成・署名</li>
+        <li>プロジェクトキックオフ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 2: キックオフ</div>
+      <p>プロジェクトチームの結成、詳細な計画策定</p>
+      <ul>
+        <li>チームメンバーの紹介</li>
+        <li>詳細なプロジェクト計画</li>
+        <li>コミュニケーション体制の確立</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 3: 評価フェーズ</div>
+      <p>既存システムの完全なセキュリティ評価</p>
+      <ul>
+        <li>脆弱性診断の実施</li>
+        <li>脅威モデルの構築</li>
+        <li>評価レポートの提出</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 4: 設計・実装</div>
+      <p>評価結果に基づく設計と実装</p>
+      <ul>
+        <li>アーキテクチャ設計</li>
+        <li>開発とテスト</li>
+        <li>デモ環境の構築</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 55 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s56">
+  <h2>よくある質問</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">Q: プロジェクトの期間は？</div>
+      <p>A: 6ヶ月（2025年7月〜12月）を想定しています。ただし、要件やスコープによって変更可能です。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Q: 既存システムのデータは？</div>
+      <p>A: 移行フェーズで既存データを安全に移行します。データ損失のないよう、複数のバックアップを取得します。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Q: サポートは継続されますか？</div>
+      <p>A: はい。プロジェクト完了後も1年のサポートを提供します。その後は有償サポート契約を締結します。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Q: セキュリティレベルは？</div>
+      <p>A: OWASP Top 10への完全対応、ISO 27001準拠のセキュリティ管理体制を提供します。</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 56 / 60</span>
+</section>
+<section class="slide section-divider" id="s57">
+  <h2>Chapter 12</h2>
+  <p>付録</p>
+  <span class="slide-number">Slide 57 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s58">
+  <h2>用語集</h2>
+  <table>
+    <tr><th>用語</th><th>説明</th></tr>
+    <tr><td>CTF</td><td>Capture The Flag — セキュリティスキルを競う競技形式の評価手法</td></tr>
+    <tr><td>JWT</td><td>JSON Web Token — 認証情報を安全に伝達するためのオープン標準</td></tr>
+    <tr><td>mTLS</td><td>相互TLS — 双方向の証明書検証による相互認証</td></tr>
+    <tr><td>DevSecOps</td><td>開発、セキュリティ、運用の統合アプローチ</td></tr>
+    <tr><td>SAST</td><td>静的アプリケーションセキュリティテスト — ソースコードの分析</td></tr>
+    <tr><td>DAST</td><td>動的アプリケーションセキュリティテスト — 実行中のアプリケーションのテスト</td></tr>
+    <tr><td>Zip Slip</td><td>アーカイブ展開時のパス TRAVERSAL 攻撃</td></tr>
+    <tr><td>RBAC</td><td>Role-Based Access Control — 役割に基づくアクセス制御</td></tr>
+  </table>
+  <span class="slide-number">Slide 58 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s59">
+  <h2>参考資料</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">セキュリティ基準</div>
+      <ul>
+        <li>OWASP Top 10 2021</li>
+        <li>NIST Cybersecurity Framework</li>
+        <li>ISO/IEC 27001:2022</li>
+        <li>PCI DSS 4.0</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">技術資料</div>
+      <ul>
+        <li>CWE Top 25 — Common Weakness Enumeration</li>
+        <li>Docker Security Best Practices</li>
+        <li>Kubernetes Security Checklist</li>
+        <li>Zero Trust Architecture Guide (NIST SP 800-207)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">プロジェクトドキュメント</div>
+      <ul>
+        <li>docs/00_converted/handoff_to_pm.md</li>
+        <li>public/docker-compose.yaml</li>
+        <li>public/app1/ — Django APIソース</li>
+        <li>public/app2/ — PHPストレージソース</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">FPT Software資料</div>
+      <ul>
+        <li>FPT Software Company Profile</li>
+        <li>FPT Security Services Brochure</li>
+        <li>FPT DevSecOps Whitepaper</li>
+        <li>FPT Client References</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 59 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s60">
+  <h2>Contact</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">FPT Software Japan</div>
+      <p>〒100-0005<br>東京都千代田区丸の内1-6-5<br>丸の内ビルディング</p>
+    </div>
+    <div class="card">
+      <div class="card-title">お問い合わせ</div>
+      <p>TEL: 03-XXXX-XXXX<br>Email: info@fpt.com<br>Web: www.fpt.com</p>
+    </div>
+    <div class="card">
+      <div class="card-title">プロジェクト担当</div>
+      <p>プロジェクトマネージャー<br>セキュリティアーキテクト<br>開発チームリーダー</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>Thank you for your consideration.</strong>
+  </div>
+  <span class="slide-number">Slide 60 / 60</span>
+</section>
+</div>
+<script>
+function toggleTheme(){
+  const h=document.documentElement,b=document.querySelector('.theme-toggle'),d=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',d?'light':'dark');b.textContent=d?'🌙':'☀️';
+}
+if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){
+  document.documentElement.setAttribute('data-theme','dark');
+  document.querySelector('.theme-toggle').textContent='☀️';
+}
+
+const BRAND_SVG='<svg class="brand-mark" viewBox="0 0 34 21" xmlns="http://www.w3.org/2000/svg"><path d="M6.68439 3.50089C4.75756 3.50089 3.12259 4.75793 2.55021 6.5013C2.53888 6.54111 2.52471 6.58093 2.51338 6.6179L2.41703 6.99331L0 17.499H6.08934C7.90849 17.499 9.45845 16.3415 10.0478 14.7204L10.2774 13.7193L12.6292 3.49805H6.68439V3.50089Z" fill="#08509F"/><path d="M18.1691 0C16.18 0 14.5025 1.34236 13.984 3.17389C13.9443 3.3104 13.9131 3.44976 13.8876 3.59196L9.88379 21H15.8286C17.866 21 19.5746 19.5951 20.0506 17.6981H20.0535L24.1196 0H18.1691Z" fill="#F27123"/><path d="M28.0555 3.50098C26.1967 3.50098 24.6099 4.6727 23.9865 6.31937C23.9553 6.40469 23.8448 6.75165 23.8448 6.75165L21.3711 17.5019H27.3159C29.3589 17.5019 31.0732 16.0885 31.5408 14.183L33.9975 3.50382H28.0555V3.50098Z" fill="#51B748"/><path d="M4.03217 7.37699C3.69781 7.6557 3.48246 7.99413 3.41728 8.26431L2.15918 13.9637H2.23002C2.62105 13.9637 2.98942 13.8243 3.32378 13.5484C3.66097 13.2726 3.87349 12.9341 3.95566 12.5445L4.27869 11.0969H6.97908C7.37011 11.0969 7.74131 10.9576 8.07851 10.6817C8.4157 10.4058 8.63105 10.0646 8.71606 9.67208L8.73023 9.60098H4.61305L4.86524 8.46055H8.76706C9.1581 8.46055 9.52646 8.32119 9.86366 8.04817C10.198 7.7723 10.4049 7.42818 10.4955 7.03855L10.5125 6.96745H5.12593C4.73489 6.96176 4.36653 7.10112 4.03217 7.37699Z" fill="white"/><path d="M31.52 7.30069C31.3047 7.08455 31.0213 6.97363 30.6813 6.97363H25.2975L25.289 7.02198C25.2691 7.12721 25.2578 7.22675 25.2578 7.3206C25.2578 7.6505 25.3683 7.92637 25.5837 8.14535C25.8019 8.3615 26.0824 8.47241 26.4252 8.47241H27.587L26.4196 13.9642H26.4932C26.8843 13.9642 27.2498 13.8248 27.5842 13.5518C27.9185 13.2759 28.1254 12.9375 28.2076 12.545L29.0718 8.46957H31.809L31.8175 8.42122C31.8374 8.32168 31.8487 8.21645 31.8487 8.11407C31.8459 7.78986 31.7354 7.51683 31.52 7.30069Z" fill="white"/><path d="M19.7101 6.96223H16.0718L16.0747 6.95654H14.5785L13.0938 13.9641H13.1646C13.5556 13.9641 13.924 13.8248 14.2555 13.5489C14.587 13.273 14.7967 12.9346 14.8789 12.545L15.1821 11.1059H18.8544C19.2454 11.1059 19.611 10.9666 19.9453 10.6935C20.2768 10.4205 20.4894 10.0792 20.5772 9.68108L20.8521 8.41551C20.8719 8.31597 20.8832 8.21359 20.8832 8.10836C20.8832 7.78414 20.7727 7.51112 20.5517 7.29213C20.3364 7.07315 20.0502 6.96223 19.7101 6.96223ZM15.7488 8.46101H19.3531L19.1038 9.60714H15.4995L15.7488 8.46101Z" fill="white"/></svg>';
+document.querySelectorAll('.slide').forEach(s=>{if(!s.querySelector('.brand-mark'))s.insertAdjacentHTML('beforeend',BRAND_SVG);});
+
+document.querySelectorAll('.slide').forEach(s=>{
+  const w=document.createElement('div');w.className='slide-wrap';
+  s.parentNode.insertBefore(w,s);w.appendChild(s);
+});
+
+const thumbNav=document.getElementById('thumb-nav');
+const slides=document.querySelectorAll('.slide');
+slides.forEach((s,i)=>{
+  const t=document.createElement('div');t.className='thumb';t.dataset.idx=i;
+  t.innerHTML='<span class="thumb-num">'+(i+1)+'</span>';
+  const inner=document.createElement('div');inner.className='thumb-inner';
+  inner.appendChild(s.cloneNode(true));
+  t.appendChild(inner);
+  t.onclick=()=>slides[i].scrollIntoView({behavior:'smooth',block:'start'});
+  thumbNav.appendChild(t);
+});
+const thumbs=thumbNav.querySelectorAll('.thumb');
+function toggleThumbs(){document.body.classList.toggle('thumbs-open');thumbNav.classList.toggle('open');setTimeout(applyScale,0);}
+function highlightThumb(){
+  const i=currentIndex();thumbs.forEach((t,j)=>t.classList.toggle('active',j===i));
+  const a=thumbs[i];if(a&&thumbNav.classList.contains('open')){
+    const r=a.getBoundingClientRect(),nr=thumbNav.getBoundingClientRect();
+    if(r.top<nr.top||r.bottom>nr.bottom)a.scrollIntoView({block:'nearest'});
+  }
+}
+
+function applyScale(){
+  const navH=54,sideW=document.body.classList.contains('thumbs-open')?220:0;
+  const vw=window.innerWidth-sideW,vh=window.innerHeight-navH;
+  const scale=Math.min(vw/1920,vh/1080,1);
+  document.documentElement.style.setProperty('--scale',scale);
+  document.documentElement.style.setProperty('--scaled-w',(1920*scale)+'px');
+  document.documentElement.style.setProperty('--scaled-h',(1080*scale)+'px');
+}
+applyScale();window.addEventListener('resize',applyScale);
+
+function currentIndex(){
+  const y=window.scrollY+window.innerHeight/2;
+  for(let i=0;i<slides.length;i++){
+    const r=slides[i].getBoundingClientRect();
+    if(r.top+window.scrollY<=y&&r.bottom+window.scrollY>=y)return i;
+  }
+  return 0;
+}
+function updateNav(){const p=document.getElementById('nav-pos');if(p)p.textContent=(currentIndex()+1)+' / '+slides.length;highlightThumb();}
+function prevSlide(){const i=currentIndex();if(i>0)slides[i-1].scrollIntoView({behavior:'smooth'});}
+function nextSlide(){const i=currentIndex();if(i<slides.length-1)slides[i+1].scrollIntoView({behavior:'smooth'});}
+window.addEventListener('scroll',updateNav);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nextSlide();if(e.key==='ArrowLeft'||e.key==='ArrowUp')prevSlide();});
+updateNav();
+</script>
+</body>
+</html>

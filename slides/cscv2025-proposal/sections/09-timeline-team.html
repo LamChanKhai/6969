@@ -1,0 +1,154 @@
+
+<section class="slide section-divider" id="s36">
+  <h2>Chapter 7</h2>
+  <p>プロジェクト計画</p>
+  <span class="slide-number">Slide 36 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s37">
+  <h2>プロジェクトタイムライン</h2>
+  <div class="gantt-wrap">
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 1: セキュリティ評価</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:0%;width:20%;background:#003087"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 2: アーキテクチャ設計</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:20%;width:20%;background:#0072CE"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 3a: 実装（前半）</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:40%;width:20%;background:#FF6B00"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 3b: 実装（後半）</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:60%;width:20%;background:#FF6B00"></div></div>
+    </div>
+    <div class="gantt-row">
+      <span class="gantt-label">Phase 4: 検証・デモ</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:80%;width:20%;background:#065f46"></div></div>
+    </div>
+    <div class="gantt-row gantt-sep">
+      <span class="gantt-label" style="color:#dc2626;font-weight:700">M1: 評価完了</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:19%;width:1%;background:#dc2626"></div></div>
+    </div>
+    <div class="gantt-row gantt-sep">
+      <span class="gantt-label" style="color:#dc2626;font-weight:700">M2: 設計承認</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:39%;width:1%;background:#dc2626"></div></div>
+    </div>
+    <div class="gantt-row gantt-sep">
+      <span class="gantt-label" style="color:#dc2626;font-weight:700">M3: デモ完了</span>
+      <div class="gantt-track"><div class="gantt-bar" style="left:99%;width:1%;background:#dc2626"></div></div>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>プロジェクト期間:</strong> 2025年7月 — 2025年12月（6ヶ月）
+  </div>
+  <span class="slide-number">Slide 37 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s38">
+  <h2>マイルストーン</h2>
+  <table>
+    <tr><th>マイルストーン</th><th>ターゲット日</th><th>完了基準</th><th>ステークホルダー</th></tr>
+    <tr><td>M1: セキュリティ評価完了</td><td>2025-08-15</td><td>評価レポート提出、承認</td><td>セキュリティチーム</td></tr>
+    <tr><td>M2: 設計承認</td><td>2025-09-30</td><td>アーキテクチャ設計書の承認</td><td>アーキテクト、ステークホルダー</td></tr>
+    <tr><td>M3: 実装完了</td><td>2025-11-15</td><td>全機能の実装、単体テスト完了</td><td>開発チーム</td></tr>
+    <tr><td>M4: 検証完了</td><td>2025-12-01</td><td>ペネテスト完了、Critical/High脆弱性ゼロ</td><td>セキュリティチーム</td></tr>
+    <tr><td>M5: デモ完了</td><td>2025-12-15</td><td>デモシナリオの全成功</td><td>プロジェクト全体</td></tr>
+  </table>
+  <span class="slide-number">Slide 38 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s39">
+  <h2>プロジェクト体制</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">プロジェクトマネージャー</div>
+      <p>プロジェクト全体の計画、進行管理、リスク管理、ステークホルダーとの調整</p>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティアーキテクト</div>
+      <p>セキュリティ設計、脅威モデル、脆弱性評価、セキュリティガイドライン策定</p>
+    </div>
+    <div class="card">
+      <div class="card-title">バックエンドエンジニア × 2</div>
+      <p>APIゲートウェイ、マイクロサービスの実装、テストコードの作成</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DevOpsエンジニア</div>
+      <p>CI/CDパイプライン、コンテナ化、監視インフラの構築</p>
+    </div>
+    <div class="card">
+      <div class="card-title">QAエンジニア</div>
+      <p>テスト計画、テストケース作成、自動化テスト、品質保証</p>
+    </div>
+    <div class="card">
+      <div class="card-title">セキュリティエンジニア</div>
+      <p>ペネトレーションテスト、脆弱性スキャン、セキュリティ監査</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 39 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s40">
+  <h2>RACIマトリックス</h2>
+  <table>
+    <tr><th>活動</th><th>PM</th><th>セキュリティ</th><th>開発</th><th>DevOps</th><th>ステークホルダー</th></tr>
+    <tr><td>プロジェクト計画</td><td>R/A</td><td>C</td><td>I</td><td>I</td><td>I</td></tr>
+    <tr><td>セキュリティ評価</td><td>I</td><td>R/A</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>アーキテクチャ設計</td><td>I</td><td>R</td><td>C</td><td>C</td><td>A</td></tr>
+    <tr><td>実装</td><td>I</td><td>C</td><td>R/A</td><td>C</td><td>I</td></tr>
+    <tr><td>CI/CD構築</td><td>I</td><td>C</td><td>I</td><td>R/A</td><td>I</td></tr>
+    <tr><td>テスト</td><td>I</td><td>C</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>デモ</td><td>R/A</td><td>C</td><td>C</td><td>C</td><td>I</td></tr>
+  </table>
+  <p style="margin-top:1rem;font-size:0.9em;color:var(--muted)">R=Responsible, A=Accountable, C=Consulted, I=Informed</p>
+  <span class="slide-number">Slide 40 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s41">
+  <h2>リスクレジスター</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>緩和策</th></tr>
+    <tr><td>R1</td><td>スケジュール遅延</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-red">大</span></td><td>高</td><td>バッファ期間、週次チェック</td></tr>
+    <tr><td>R2</td><td>技術的複雑さ</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">中</span></td><td>中</td><td>プロトタイプ、技術調査フェーズ</td></tr>
+    <tr><td>R3</td><td>リソース不足</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-red">大</span></td><td>中</td><td>リソース確保計画、スペア人員</td></tr>
+    <tr><td>R4</td><td>要件変更</td><td><span class="badge badge-orange">中</span></td><td><span class="badge badge-orange">中</span></td><td>中</td><td>変更管理プロセス、アジャイル対応</td></tr>
+    <tr><td>R5</td><td>セキュリティインシデント</td><td><span class="badge badge-blue">低</span></td><td><span class="badge badge-red">甚大</span></td><td>高</td><td>インシデントレスポンス計画</td></tr>
+  </table>
+  <span class="slide-number">Slide 41 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s42">
+  <h2>コミュニケーション計画</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">週次ステークホルダー会議</div>
+      <ul>
+        <li>進捗報告、課題共有</li>
+        <li>意思決定事項の確認</li>
+        <li>次の週の計画</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">日次スタンドアップ</div>
+      <ul>
+        <li>チーム内での進捗共有</li>
+        <li>課題の早期発見</li>
+        <li>タスクの調整</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">マイルストーンレビュー</div>
+      <ul>
+        <li>成果物のレビュー</li>
+        <li>次のフェーズへの準備</li>
+        <li>ステークホルダー承認</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">緊急連絡チャネル</div>
+      <ul>
+        <li>Slack緊急チャンネル</li>
+        <li>PagerDutyアラート</li>
+        <li>24時間対応体制</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-number">Slide 42 / 60</span>
+</section>

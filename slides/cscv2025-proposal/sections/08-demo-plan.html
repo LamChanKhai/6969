@@ -1,0 +1,88 @@
+<section class="slide section-divider" id="s31">
+  <h2>Chapter 6</h2>
+  <p>デモ計画</p>
+  <span class="slide-number">Slide 31 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s32">
+  <h2>デモスコープ</h2>
+  <div class="card-grid grid2">
+    <div class="card">
+      <div class="card-title">インスコープ</div>
+      <ul>
+        <li>刷新後のセキュアなファイルアップロード</li>
+        <li>アーカイブ展開のサンドボックス化</li>
+        <li>JWT認証とRBACの実演</li>
+        <li>DevSecOpsパイプラインのデモンストレーション</li>
+        <li>リアルタイム監視ダッシュボード</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">アウトオブスコープ</div>
+      <ul>
+        <li>本番環境のデプロイ</li>
+        <li>大規模負荷テスト</li>
+        <li>マルチテナント対応</li>
+        <li>モバイルクライアント</li>
+      </ul>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>デモ期間:</strong> 2025年7月 — 2025年9月（3ヶ月）
+  </div>
+  <span class="slide-number">Slide 32 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s33">
+  <h2>ユーザージャーニー</h2>
+  <div class="flow-row">
+    <div class="flow-node">ログイン</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">ファイルアップロード</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">セキュリティ検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">展開・保存</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">結果確認</div>
+  </div>
+  <div class="card-grid grid2" style="margin-top:1.5rem">
+    <div class="card">
+      <div class="card-title">ステップ 1-2: 認証とアップロード</div>
+      <p>ユーザーが認証后、セキュアなAPIを通じてファイルをアップロード。入力検証がリアルタイムで実行されます。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ステップ 3-4: 検証と処理</div>
+      <p>アップロードされたファイルはサンドボックス内で検証・展開され、結果が暗号化されて保存されます。</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 33 / 60</span>
+</section>
+<section class="slide slide--very-sparse" id="s34">
+  <h2>「Wow」モーメント</h2>
+  <div class="card-grid grid3">
+    <div class="card">
+      <div class="card-title">リアルタイム脆弱性検出</div>
+      <p>悪意あるファイルをアップロードすると、システムがリアルタイムで検出し、ブロックする様子をデモ</p>
+    </div>
+    <div class="card">
+      <div class="card-title">DevSecOpsパイプライン</div>
+      <p>コードコミットからデプロイまでの全自動化プロセスをライブデモ。セキュリティチェックが自動的に実行される様子を確認</p>
+    </div>
+    <div class="card">
+      <div class="card-title">監視ダッシュボード</div>
+      <p>Grafanaダッシュボードで、システムの状態、セキュリティイベント、パフォーマンスメトリクスをリアルタイムで可視化</p>
+    </div>
+  </div>
+  <span class="slide-number">Slide 34 / 60</span>
+</section>
+<section class="slide slide--sparse" id="s35">
+  <h2>成功基準</h2>
+  <table>
+    <tr><th>KPI</th><th>目標値</th><th>測定方法</th><th>責任者</th></tr>
+    <tr><td>セキュリティスコア</td><td>90点以上</td><td>OWASP ZAPレポート</td><td>セキュリティエンジニア</td></tr>
+    <tr><td>API応答時間</td><td>&lt; 200ms</td><td>Prometheusメトリクス</td><td>バックエンドエンジニア</td></tr>
+    <tr><td>テストカバレッジ</td><td>80%以上</td><td>Coverageレポート</td><td>QAエンジニア</td></tr>
+    <tr><td>デモ成功率</td><td>100%</td><td>デモシナリオチェックリスト</td><td>プロジェクトマネージャー</td></tr>
+    <tr><td>脆弱性残数</td><td>Critical: 0, High: 0</td><td>ペネトレーションテスト</td><td>セキュリティエンジニア</td></tr>
+  </table>
+  <span class="slide-number">Slide 35 / 60</span>
+</section>
