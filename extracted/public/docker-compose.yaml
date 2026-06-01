@@ -1,0 +1,17 @@
+
+services:
+  app1:
+    build:
+      context: ./app1
+      dockerfile: Dockerfile
+    environment:
+      - STORAGE_URL=http://app2
+    ports:
+      - "8000:8000"
+
+  app2:
+    build:
+      context: ./app2
+      dockerfile: Dockerfile
+    volumes:
+      - ./app2/flag.txt:/flag.txt:ro
