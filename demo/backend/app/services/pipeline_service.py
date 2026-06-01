@@ -84,7 +84,7 @@ async def update_run_status(
     run.status = status
     if logs is not None:
         run.logs = logs
-    if status in ("success", "failed", "skipped"):
+    if status in ("completed", "failed", "skipped"):
         run.finished_at = datetime.now(timezone.utc)
         if run.started_at:
             run.duration_seconds = (run.finished_at - run.started_at).total_seconds()
@@ -113,6 +113,6 @@ async def get_overall_status(db: AsyncSession) -> str:
         return "failed"
     if "running" in statuses:
         return "running"
-    if all(s == "success" for s in statuses):
-        return "success"
+    if all(s == "completed" for s in statuses):
+        return "completed"
     return "partial"

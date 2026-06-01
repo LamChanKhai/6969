@@ -96,3 +96,44 @@ export interface PipelineOverview {
   latest_runs: PipelineRun[];
   overall_status: string;
 }
+
+export interface FileScanResult {
+  id: string;
+  upload_id: string;
+  scanner_name: string;
+  scanner_version: string | null;
+  scan_type: string;
+  scan_status: string;
+  threats_found: number;
+  scan_details: string | null;
+  duration_ms: number | null;
+  created_at: string;
+}
+
+export interface ApiKey {
+  id: string;
+  user_id: string;
+  key_prefix: string;
+  name: string;
+  expires_at: string | null;
+  last_used_at: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface ApiKeyWithSecret {
+  api_key: string;
+  key: ApiKey;
+}
+
+export interface RateLimitEvent {
+  id: string;
+  user_id: string | null;
+  ip_address: string;
+  endpoint: string;
+  request_count: number;
+  window_start: string;
+  window_end: string;
+  action_taken: string;
+  created_at: string;
+}

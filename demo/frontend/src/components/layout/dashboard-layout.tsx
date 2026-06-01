@@ -16,6 +16,9 @@ import {
   X,
   ChevronRight,
   Lock,
+  ScanLine,
+  Key,
+  Gauge,
 } from 'lucide-react';
 
 const navItems = [
@@ -23,11 +26,14 @@ const navItems = [
   { name: 'Uploads', href: '/dashboard/uploads', icon: Upload },
   { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitBranch },
   { name: 'Monitoring', href: '/dashboard/monitoring', icon: Shield },
+  { name: 'Scan Results', href: '/dashboard/scans', icon: ScanLine },
+  { name: 'API Keys', href: '/dashboard/api-keys', icon: Key },
 ];
 
 const adminItems = [
   { name: 'Users', href: '/dashboard/users', icon: Users },
   { name: 'Audit Log', href: '/dashboard/audit', icon: FileText },
+  { name: 'Rate Limits', href: '/dashboard/rate-limits', icon: Gauge },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

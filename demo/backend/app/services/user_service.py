@@ -1,5 +1,6 @@
-"""User service — CRUD operations."""
+"""User service — CRUD operations with login security."""
 
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 from uuid import UUID
 
@@ -9,6 +10,9 @@ from sqlalchemy.orm import selectinload
 
 from app.models.models import User, UserRole
 from app.core.password import hash_password, verify_password
+
+MAX_FAILED_LOGIN_ATTEMPTS = 5
+LOCKOUT_DURATION_MINUTES = 15
 
 
 async def get_user_by_username(db: AsyncSession, username: str) -> Optional[User]:
@@ -51,16 +55,47 @@ async def create_user(
     return user
 
 
-async def authenticate_user(db: AsyncSession, username: str, password: str) -> Optional[User]:
-    """Authenticate user by username and password."""
+async def record_successful_login(db: AsyncSession, user: User) -> None:
+    """Record a successful login, resetting failure counters."""
+    user.last_login_at = datetime.now(timezone.utc)
+    user.failed_login_attempts = 0
+    user.locked_until = None
+    await db.commit()
+
+
+async def record_failed_login(db: AsyncSession, user: User) -> None:
+    """Record a failed login attempt and lock account if threshold reached."""
+    user.failed_login_attempts += 1
+    if user.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS:
+        user.locked_until = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+    await db.commit()
+
+
+async def is_user_locked(user: User) -> bool:
+    """Check if a user's account is currently locked."""
+    if user.locked_until and user.locked_until > datetime.now(timezone.utc):
+        return True
+    return False
+
+
+async def authenticate_user(db: AsyncSession, username: str, password: str) -> tuple[Optional[User], str]:
+    """Authenticate user by username and password.
+
+    Returns (user, reason) where reason is empty string on success,
+    or one of: 'not_found', 'inactive', 'locked', 'invalid_password'.
+    """
     user = await get_user_by_username(db, username)
     if not user:
-        return None
-    if not verify_password(password, user.hashed_password):
-        return None
+        return None, "not_found"
     if not user.is_active:
-        return None
-    return user
+        return None, "inactive"
+    if await is_user_locked(user):
+        return None, "locked"
+    if not verify_password(password, user.hashed_password):
+        await record_failed_login(db, user)
+        return None, "invalid_password"
+    await record_successful_login(db, user)
+    return user, ""
 
 
 async def update_user(
@@ -91,6 +126,8 @@ async def change_user_password(db: AsyncSession, user_id: UUID, new_password: st
     if not user:
         return False
     user.hashed_password = hash_password(new_password)
+    user.failed_login_attempts = 0
+    user.locked_until = None
     await db.commit()
     return True
 

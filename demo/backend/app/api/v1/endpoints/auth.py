@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+from uuid import UUID
 
 from app.core.database import get_db
 from app.core.security import create_access_token, create_refresh_token, decode_token, verify_token_type
@@ -26,8 +27,13 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ):
     """Authenticate user and return JWT tokens."""
-    user = await authenticate_user(db, request.username, request.password)
+    user, reason = await authenticate_user(db, request.username, request.password)
     if not user:
+        if reason == "locked":
+            raise HTTPException(
+                status_code=status.HTTP_423_LOCKED,
+                detail="Account is temporarily locked due to too many failed login attempts",
+            )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
@@ -126,7 +132,6 @@ async def get_me(
 ):
     """Get current authenticated user profile."""
     from app.services.user_service import get_user_by_id
-    from uuid import UUID
 
     user = await get_user_by_id(db, UUID(current_user["sub"]))
     if not user:

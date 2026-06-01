@@ -10,6 +10,7 @@ from app.core.database import engine, async_session_factory, init_db, Base
 from app.models.models import (
     User, FileUpload, AuditLog, SecurityEvent,
     ExtractionEvent, PipelineStage, PipelineRun,
+    PipelineExecution, PipelineExecutionStep,
     UserRole,
 )
 from app.core.password import hash_password
@@ -189,14 +190,14 @@ async def seed():
 
         # ── Pipeline Runs ─────────────────────────────────────────────
         run_statuses = [
-            ("success", "Scan complete: 0 issues found"),
-            ("success", "Scan complete: 0 vulnerable dependencies"),
-            ("success", "Scan complete: 0 CVEs found"),
-            ("success", "Scan complete: 0 secrets detected"),
-            ("success", "Scan complete: 0 high/medium issues"),
+            ("completed", "Scan complete: 0 issues found"),
+            ("completed", "Scan complete: 0 vulnerable dependencies"),
+            ("completed", "Scan complete: 0 CVEs found"),
+            ("completed", "Scan complete: 0 secrets detected"),
+            ("completed", "Scan complete: 0 high/medium issues"),
             ("running", "In progress: testing 47 endpoints..."),
-            ("success", "All 7 policies passed"),
-            ("success", "Deployment successful to staging"),
+            ("completed", "All 7 policies passed"),
+            ("completed", "Deployment successful to staging"),
         ]
 
         for i, (status, logs) in enumerate(run_statuses, 1):
@@ -213,6 +214,69 @@ async def seed():
                 logs=logs,
             )
             db.add(run)
+
+        # ── Pipeline Executions (10 steps, first one failed) ──────────
+        exec_id = uuid.UUID("a8000000-0000-0000-0000-000000000001")
+        exec_started = datetime(2025, 4, 1, 9, 0, 0, tzinfo=timezone.utc)
+        execution = PipelineExecution(
+            id=exec_id,
+            name="Security Scan Pipeline #1",
+            total_steps=10,
+            current_step=10,
+            status="failed",
+            step_logs="Step 1 failed: Connection timeout to SonarQube server",
+            error_message="Connection timeout to SonarQube server after 30s",
+            started_at=exec_started,
+            finished_at=exec_started + timedelta(minutes=8),
+            created_at=exec_started,
+        )
+        db.add(execution)
+
+        step_names = [
+            "Code Scan",
+            "Dependency Check",
+            "Container Scan",
+            "Secret Detection",
+            "SAST Analysis",
+            "DAST Analysis",
+            "Compliance Check",
+            "Infrastructure Scan",
+            "License Audit",
+            "Final Report Generation",
+        ]
+
+        step_statuses = [
+            "failed",
+            "skipped",
+            "skipped",
+            "skipped",
+            "skipped",
+            "skipped",
+            "skipped",
+            "skipped",
+            "skipped",
+            "skipped",
+        ]
+
+        for i, (step_name, step_status) in enumerate(zip(step_names, step_statuses), 1):
+            step_start = exec_started + timedelta(minutes=i - 1)
+            step = PipelineExecutionStep(
+                id=uuid.UUID(f"a9000000-0000-0000-0000-{i:012d}"),
+                execution_id=exec_id,
+                step_number=i,
+                step_name=step_name,
+                status=step_status,
+                logs=(
+                    "Connection timeout to SonarQube server after 30s"
+                    if i == 1
+                    else "Skipped due to previous step failure"
+                ),
+                started_at=step_start,
+                finished_at=step_start + timedelta(seconds=30) if step_status == "failed" else None,
+                duration_seconds=30.0 if step_status == "failed" else None,
+                created_at=step_start,
+            )
+            db.add(step)
 
         await db.commit()
         print("Database seeded successfully!")

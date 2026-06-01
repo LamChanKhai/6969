@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Shield, Lock, User, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default function RegisterPage() {
   const router = useRouter();
   const { register, isLoading, error, setError } = useAuthStore();

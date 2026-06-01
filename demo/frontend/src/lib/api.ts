@@ -8,6 +8,10 @@ import {
   SystemMetrics,
   SecurityDashboard,
   PipelineOverview,
+  FileScanResult,
+  ApiKey,
+  ApiKeyWithSecret,
+  RateLimitEvent,
 } from '@/types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -90,4 +94,49 @@ export async function updateUser(id: string, data: { email?: string; role?: stri
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(data),
   });
+}
+
+// Scans
+export async function listScans(uploadId?: string, scanType?: string, scanStatus?: string, skip = 0, limit = 50): Promise<PaginatedResponse<FileScanResult>> {
+  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  if (uploadId) params.set('upload_id', uploadId);
+  if (scanType) params.set('scan_type', scanType);
+  if (scanStatus) params.set('scan_status', scanStatus);
+  return apiFetch(`/api/v1/scans/?${params}`);
+}
+
+export async function createScan(data: { upload_id: string; scanner_name: string; scan_type: string; scanner_version?: string; scan_status?: string; threats_found?: number; scan_details?: string; duration_ms?: number }): Promise<FileScanResult> {
+  return apiFetch('/api/v1/scans/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+}
+
+// API Keys
+export async function listApiKeys(skip = 0, limit = 50): Promise<PaginatedResponse<ApiKey>> {
+  return apiFetch(`/api/v1/api-keys/?skip=${skip}&limit=${limit}`);
+}
+
+export async function createApiKey(name: string, expires_at?: string): Promise<ApiKeyWithSecret> {
+  return apiFetch('/api/v1/api-keys/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ name, expires_at }),
+  });
+}
+
+export async function revokeApiKey(id: string): Promise<{ detail: string; key_prefix: string }> {
+  return apiFetch(`/api/v1/api-keys/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// Rate Limits
+export async function listRateLimits(ipAddress?: string, endpoint?: string, actionTaken?: string, skip = 0, limit = 50): Promise<PaginatedResponse<RateLimitEvent>> {
+  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  if (ipAddress) params.set('ip_address', ipAddress);
+  if (endpoint) params.set('endpoint', endpoint);
+  if (actionTaken) params.set('action_taken', actionTaken);
+  return apiFetch(`/api/v1/rate-limits/?${params}`);
 }

@@ -65,6 +65,10 @@ class UserResponse(BaseModel):
     email: str
     role: UserRole
     is_active: bool
+    last_login_at: Optional[datetime] = None
+    login_attempts: int = 0
+    failed_login_attempts: int = 0
+    locked_until: Optional[datetime] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -88,6 +92,9 @@ class FileUploadResponse(BaseModel):
     extraction_status: str
     security_scan_status: str
     security_scan_result: str
+    file_hash_sha256: Optional[str] = None
+    archived: bool = False
+    archived_at: Optional[datetime] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -107,6 +114,97 @@ class ExtractionStatusResponse(BaseModel):
     created_at: datetime
 
 
+# ── File Scan Results ─────────────────────────────────────────────────────
+
+class FileScanResultCreate(BaseModel):
+    upload_id: uuid.UUID
+    scanner_name: str
+    scanner_version: Optional[str] = None
+    scan_type: str
+    scan_status: str = "pending"
+    threats_found: int = 0
+    scan_details: Optional[str] = None
+    duration_ms: Optional[int] = None
+
+
+class FileScanResultResponse(BaseModel):
+    id: uuid.UUID
+    upload_id: uuid.UUID
+    scanner_name: str
+    scanner_version: Optional[str] = None
+    scan_type: str
+    scan_status: str
+    threats_found: int
+    scan_details: Optional[str] = None
+    duration_ms: Optional[int] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class FileScanResultListResponse(BaseModel):
+    items: List[FileScanResultResponse]
+    total: int
+    skip: int
+    limit: int
+
+
+# ── Rate Limit Events ─────────────────────────────────────────────────────
+
+class RateLimitEventResponse(BaseModel):
+    id: uuid.UUID
+    user_id: Optional[uuid.UUID] = None
+    ip_address: str
+    endpoint: str
+    request_count: int
+    window_start: datetime
+    window_end: datetime
+    action_taken: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class RateLimitEventListResponse(BaseModel):
+    items: List[RateLimitEventResponse]
+    total: int
+    skip: int
+    limit: int
+
+
+# ── API Keys ───────────────────────────────────────────────────────────────
+
+class ApiKeyCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    expires_at: Optional[datetime] = None
+
+
+class ApiKeyResponse(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    key_prefix: str
+    name: str
+    expires_at: Optional[datetime] = None
+    last_used_at: Optional[datetime] = None
+    is_active: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ApiKeyListResponse(BaseModel):
+    items: List[ApiKeyResponse]
+    total: int
+    skip: int
+    limit: int
+
+
+class ApiKeyWithSecretResponse(BaseModel):
+    """Returned only once at creation time."""
+    api_key: str
+    key: ApiKeyResponse
+
+
 # ── Audit Log ──────────────────────────────────────────────────────────────
 
 class AuditLogResponse(BaseModel):
@@ -117,6 +215,8 @@ class AuditLogResponse(BaseModel):
     details: str
     ip_address: Optional[str]
     user_agent: Optional[str]
+    session_id: Optional[str] = None
+    request_id: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

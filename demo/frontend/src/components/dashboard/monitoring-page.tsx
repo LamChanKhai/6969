@@ -101,10 +101,10 @@ export default function MonitoringPage() {
                   data={[{ value: card.value, fill: card.color }]}
                 >
                   <RadialBar
-                    minAngle={15}
+                    dataKey="value"
+                    name="value"
                     startAngle={90}
                     endAngle={-270}
-                    data={[{ value: card.value, fill: card.color }]}
                     background={{ fill: '#1e2640' }}
                     cornerRadius={4}
                   />
