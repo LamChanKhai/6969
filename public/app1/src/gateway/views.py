@@ -59,6 +59,8 @@ class UserViewSet(viewsets.ViewSet):
                     username = request_data["username"]
                 ).first()
                 if not user:
+                    if "email" in request_data and User.objects.filter(email=request_data["email"]).exists():
+                        return Response(data="Email already exists", status=400)
                     user = User.objects.create(
                         **request_data
                     )

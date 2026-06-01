@@ -143,6 +143,13 @@ REST_FRAMEWORK = {
     ]
 }
 
+# Session and Cookie Security
+SESSION_COOKIE_AGE = 3600  # 1 hour
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
 
 STORAGE_URL = env("STORAGE_URL",default="http://127.0.0.1:8002")
 ALLOW_STORAGE_FILE = (".txt",".docx",".png",".jpg",".jpeg")
