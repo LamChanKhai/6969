@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SuperApp デモフェーズ 提案書</title>
+<style>
+:root{
+  --bg:#f8faff;--surface:#fff;--surface-2:rgba(255,255,255,0.95);
+  --text:#1a202c;--muted:#6b7280;
+  --accent:#003087;--accent2:#0072CE;--accent3:#FF6B00;
+  --border:#e2e8f0;--border-strong:#cbd5e1;
+  --gradient1:linear-gradient(135deg,#003087 0%,#0072CE 100%);
+  --gradient-hero:linear-gradient(160deg,#001a4d 0%,#003087 45%,#0072CE 100%);
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+}
+[data-theme="dark"]{
+  --bg:#0a0e1a;--surface:#111827;--surface-2:rgba(17,24,39,0.92);
+  --text:#e2e8f0;--muted:#9ca3af;
+  --border:#374151;--border-strong:#4b5563;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  font-family:"Meiryo UI","Yu Gothic","Meiryo","Hiragino Sans","Noto Sans CJK JP",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:20px;line-height:1.55;
+  transition:background .3s,color .3s;
+}
+.deck{display:flex;flex-direction:column;align-items:center}
+
+/* Scaled wrapper so .slide (1920x1080) fits viewport */
+.slide-wrap{width:var(--scaled-w,1920px);height:var(--scaled-h,1080px);position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.slide-wrap > .slide{transform:scale(var(--scale,1));transform-origin:top left;border-bottom:0}
+
+.slide{
+  position:relative;
+  width:1920px;height:1080px;min-height:1080px;max-height:1080px;
+  padding:72px 96px 92px;
+  display:flex;flex-direction:column;
+  background:var(--bg);overflow:hidden;
+}
+.slide.cover{align-items:center;justify-content:center;text-align:center;background:var(--gradient-hero);color:white;padding:96px}
+.slide.section-divider{align-items:center;justify-content:center;text-align:center;background:var(--gradient1);color:white}
+
+h1,h2,h3{font-weight:700;line-height:1.2}
+.slide h1{font-size:3.2em;margin-bottom:.3em}
+.slide h2{font-size:2.2em;color:var(--accent);margin-bottom:.4em}
+.slide h3{font-size:1.2em;color:var(--accent2);margin-bottom:.3em}
+.slide.section-divider h2{color:white!important;font-size:2.8em}
+.slide.section-divider p{color:rgba(255,255,255,.88);font-size:1.2em;margin-top:.6em}
+.slide.cover h1{color:white;font-size:3.4em}
+.slide p{font-size:1.1em;color:var(--muted);margin-bottom:1rem}
+.slide ul{padding-left:1.4em;margin-top:.4rem}
+.slide ul li{font-size:clamp(1.1em,1.5vw,1.3em);margin:.5em 0;line-height:1.45}
+
+.card-grid{display:grid;gap:1.2rem;margin-top:.6rem}
+.grid2{grid-template-columns:1fr 1fr}
+.grid3{grid-template-columns:1fr 1fr 1fr}
+.grid4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:1.5rem 1.8rem;box-shadow:var(--shadow);overflow-wrap:break-word;word-break:break-word}
+.card-title{font-weight:700;font-size:1.35em;color:var(--accent);margin-bottom:.5em}
+
+.badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:.9em;font-weight:600;margin-bottom:.6rem}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-orange{background:#fed7aa;color:#c2410c}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+.badge-red{background:#fee2e2;color:#991b1b}
+
+.flow-row{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;margin:.6em 0}
+.flow-node{background:var(--surface-2);border:2px solid var(--accent2);border-radius:12px;padding:.8rem 1.4rem;text-align:center;font-size:clamp(.9em,1.3vw,1.1em);font-weight:600;color:var(--text);min-width:140px;box-shadow:var(--shadow)}
+.flow-node.accent{background:var(--gradient1);color:white;border-color:var(--accent)}
+.flow-node.warm{background:linear-gradient(135deg,#FF6B00,#FF8F3A);color:white;border-color:#FF6B00}
+.flow-node.orange{background:linear-gradient(135deg,#ff6b00,#ff9500);color:white;border-color:#ff6b00}
+.flow-node.green{background:#065f46;color:white;border-color:#065f46}
+.flow-arrow{font-size:1.6em;color:var(--accent2);font-weight:700}
+.flow-label{font-size:1em;color:var(--muted);text-align:center;margin:.3em 0;font-weight:600}
+.arrow{font-size:1.3em;color:var(--accent2);font-weight:700}
+
+.gantt-wrap{overflow-x:auto;width:100%;margin-top:.6rem;display:grid;grid-template-columns:max-content 1fr;column-gap:.6rem;row-gap:.22rem;align-items:center;font-size:clamp(.85em,1.2vw,1em)}
+.gantt-row{display:contents}
+.gantt-label{min-width:0;width:auto;color:var(--text);font-weight:500}
+.gantt-track{background:var(--border);border-radius:4px;height:22px;position:relative;min-width:240px}
+.gantt-bar{position:absolute;height:100%;border-radius:4px}
+.gantt-row.gantt-sep > .gantt-label,.gantt-row.gantt-sep > .gantt-track{margin-top:.4rem}
+
+.highlight-box{background:linear-gradient(135deg,#e5eaf4,#e5f1fa);border-left:4px solid var(--accent2);border-radius:10px;padding:1.3rem 1.8rem;margin-top:1.5rem;font-size:1.1em}
+.accent-box{background:linear-gradient(135deg,#ffe2cc,#fff4ea);border-left:4px solid var(--accent3);border-radius:10px;padding:1.3rem 1.8rem;margin-top:1rem;font-size:1.1em}
+
+table{width:100%;border-collapse:collapse;font-size:clamp(.9em,1.3vw,1.05em);margin-top:.6rem}
+th{background:var(--gradient1);color:white;padding:12px 16px;text-align:left;font-weight:600}
+td{padding:10px 16px;border-bottom:1px solid var(--border)}
+tr:nth-child(even) td{background:#f1f4fa}
+
+.big-number{font-size:clamp(3em,6vw,5em);font-weight:900;color:var(--accent2);line-height:1}
+.big-label{font-size:1.1em;color:var(--muted);margin-top:.3em}
+
+/* Sparse-slide modifiers */
+.slide.slide--sparse h2{font-size:2.6em}
+.slide.slide--sparse h3{font-size:1.5em}
+.slide.slide--sparse p{font-size:1.35em}
+.slide.slide--sparse ul li{font-size:1.5em;margin:.7em 0}
+.slide.slide--sparse table{font-size:1.2em}
+.slide.slide--sparse th,.slide.slide--sparse td{padding:14px 18px}
+.slide.slide--sparse .flow-node{font-size:1.3em;padding:1rem 1.6rem;min-width:170px}
+.slide.slide--sparse .flow-arrow{font-size:1.9em}
+.slide.slide--sparse .card-title{font-size:1.55em}
+.slide.slide--sparse .card{padding:1.7rem 2rem}
+.slide.slide--sparse .highlight-box,.slide.slide--sparse .accent-box{font-size:1.3em;padding:1.5rem 2rem}
+.slide.slide--sparse .gantt-wrap{font-size:1.15em}
+
+.slide.slide--very-sparse h2{font-size:3em}
+.slide.slide--very-sparse h3{font-size:1.7em}
+.slide.slide--very-sparse p{font-size:1.55em}
+.slide.slide--very-sparse ul li{font-size:1.7em;margin:.85em 0}
+.slide.slide--very-sparse table{font-size:1.4em}
+.slide.slide--very-sparse th,.slide.slide--very-sparse td{padding:16px 22px}
+.slide.slide--very-sparse .flow-node{font-size:1.55em;padding:1.2rem 1.9rem;min-width:200px}
+.slide.slide--very-sparse .flow-arrow{font-size:2.2em}
+.slide.slide--very-sparse .card-title{font-size:1.8em}
+.slide.slide--very-sparse .card{padding:1.9rem 2.3rem}
+.slide.slide--very-sparse .highlight-box,.slide.slide--very-sparse .accent-box{font-size:1.55em;padding:1.8rem 2.4rem}
+.slide.slide--very-sparse .gantt-wrap{font-size:1.3em}
+
+.attribution{position:absolute;bottom:14px;left:24px;font-size:12px;color:var(--muted);opacity:.6;pointer-events:none}
+.slide.cover .attribution,.slide.section-divider .attribution{color:rgba(255,255,255,.55)}
+.slide-number{position:absolute;bottom:14px;right:24px;font-size:14px;color:var(--muted);opacity:.7}
+.slide.cover .slide-number,.slide.section-divider .slide-number{color:rgba(255,255,255,.7)}
+
+.brand-mark{position:absolute;top:22px;right:32px;width:96px;height:auto;pointer-events:none;z-index:5}
+
+#slide-nav{position:fixed;top:0;left:0;right:0;background:rgba(0,48,135,.97);color:white;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:1000;gap:1rem;font-size:.95em}
+#slide-nav button{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:1em}
+.theme-toggle{position:fixed;top:64px;right:20px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:1.1em;box-shadow:var(--shadow)}
+body{padding-top:54px}
+
+.thumb-nav{position:fixed;left:0;top:54px;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px 10px;z-index:998;display:none}
+.thumb-nav.open{display:block}
+body.thumbs-open{padding-left:220px}
+body.thumbs-open .theme-toggle{left:240px;right:auto}
+.thumb{width:200px;height:112px;margin-bottom:10px;border:2px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;position:relative;background:#fff}
+.thumb:hover{border-color:var(--accent2)}
+.thumb.active{border-color:var(--accent3);box-shadow:0 0 0 2px rgba(255,107,0,.3)}
+.thumb-inner{width:1920px;height:1080px;transform:scale(0.1042);transform-origin:top left;pointer-events:none}
+.thumb-num{position:absolute;top:3px;left:4px;font-size:10px;font-weight:600;background:rgba(0,0,0,.65);color:#fff;padding:1px 5px;border-radius:3px;z-index:2}
+.thumb-toggle{position:fixed;top:64px;left:20px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:1.1em;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<div id="slide-nav">
+  <div><strong>SuperApp デモフェーズ 提案書</strong></div>
+  <div><button onclick="prevSlide()">◀</button> <span id="nav-pos">1 / 56</span> <button onclick="nextSlide()">▶</button></div>
+</div>
+<button class="thumb-toggle" onclick="toggleThumbs()" title="Slides">☰</button>
+<button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+<aside class="thumb-nav" id="thumb-nav"></aside>
+<div class="deck">
+<section class="slide cover" id="s1">
+  <svg width="188" height="116" viewBox="0 0 34 21" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 1.8rem;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))"><path d="M6.68439 3.50089C4.75756 3.50089 3.12259 4.75793 2.55021 6.5013C2.53888 6.54111 2.52471 6.58093 2.51338 6.6179L2.41703 6.99331L0 17.499H6.08934C7.90849 17.499 9.45845 16.3415 10.0478 14.7204L10.2774 13.7193L12.6292 3.49805H6.68439V3.50089Z" fill="#08509F"/><path d="M18.1691 0C16.18 0 14.5025 1.34236 13.984 3.17389C13.9443 3.3104 13.9131 3.44976 13.8876 3.59196L9.88379 21H15.8286C17.866 21 19.5746 19.5951 20.0506 17.6981H20.0535L24.1196 0H18.1691Z" fill="#F27123"/><path d="M28.0555 3.50098C26.1967 3.50098 24.6099 4.6727 23.9865 6.31937C23.9553 6.40469 23.8448 6.75165 23.8448 6.75165L21.3711 17.5019H27.3159C29.3589 17.5019 31.0732 16.0885 31.5408 14.183L33.9975 3.50382H28.0555V3.50098Z" fill="#51B748"/><path d="M4.03217 7.37699C3.69781 7.6557 3.48246 7.99413 3.41728 8.26431L2.15918 13.9637H2.23002C2.62105 13.9637 2.98942 13.8243 3.32378 13.5484C3.66097 13.2726 3.87349 12.9341 3.95566 12.5445L4.27869 11.0969H6.97908C7.37011 11.0969 7.74131 10.9576 8.07851 10.6817C8.4157 10.4058 8.63105 10.0646 8.71606 9.67208L8.73023 9.60098H4.61305L4.86524 8.46055H8.76706C9.1581 8.46055 9.52646 8.32119 9.86366 8.04817C10.198 7.7723 10.4049 7.42818 10.4955 7.03855L10.5125 6.96745H5.12593C4.73489 6.96176 4.36653 7.10112 4.03217 7.37699Z" fill="white"/><path d="M31.52 7.30069C31.3047 7.08455 31.0213 6.97363 30.6813 6.97363H25.2975L25.289 7.02198C25.2691 7.12721 25.2578 7.22675 25.2578 7.3206C25.2578 7.6505 25.3683 7.92637 25.5837 8.14535C25.8019 8.3615 26.0824 8.47241 26.4252 8.47241H27.587L26.4196 13.9642H26.4932C26.8843 13.9642 27.2498 13.8248 27.5842 13.5518C27.9185 13.2759 28.1254 12.9375 28.2076 12.545L29.0718 8.46957H31.809L31.8175 8.42122C31.8374 8.32168 31.8487 8.21645 31.8487 8.11407C31.8459 7.78986 31.7354 7.51683 31.52 7.30069Z" fill="white"/><path d="M19.7101 6.96223H16.0718L16.0747 6.95654H14.5785L13.0938 13.9641H13.1646C13.5556 13.9641 13.924 13.8248 14.2555 13.5489C14.587 13.273 14.7967 12.9346 14.8789 12.545L15.1821 11.1059H18.8544C19.2454 11.1059 19.611 10.9666 19.9453 10.6935C20.2768 10.4205 20.4894 10.0792 20.5772 9.68108L20.8521 8.41551C20.8719 8.31597 20.8832 8.21359 20.8832 8.10836C20.8832 7.78414 20.7727 7.51112 20.5517 7.29213C20.3364 7.07315 20.0502 6.96223 19.7101 6.96223ZM15.7488 8.46101H19.3531L19.1038 9.60714H15.4995L15.7488 8.46101Z" fill="white"/></svg>
+  <h1>SuperApp デモフェーズ</h1>
+  <p style="color:rgba(255,255,255,.88);font-size:1.4em;margin-top:.4em;">2マイクロサービスアーキテクチャによるエンドツーエンド実証</p>
+  <p style="color:rgba(255,255,255,.7);font-size:1.1em;margin-top:1.6em;">2025年6月</p>
+  <span class="slide-number">Slide 1 / 56</span>
+</section>
+<section class="slide" id="s2">
+  <h2>目次</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">1. プロジェクト概要</div><p>背景、目的、スコープ</p></div>
+    <div class="card"><div class="card-title">2. システムアーキテクチャ</div><p>2マイクロサービス構成</p></div>
+    <div class="card"><div class="card-title">3. 技術スタック</div><p>Django・PHP・Docker</p></div>
+    <div class="card"><div class="card-title">4. APIエンドポイント</div><p>App1 + App2の詳細</p></div>
+    <div class="card"><div class="card-title">5. デモフロー</div><p>8ステップ・ワウモーメント</p></div>
+    <div class="card"><div class="card-title">6. タイムライン</div><p>スケジュール・マイルストーン</p></div>
+    <div class="card"><div class="card-title">7. チーム構成</div><p>RACIマトリクス</p></div>
+    <div class="card"><div class="card-title">8. リスク管理</div><p>リスクレジスター</p></div>
+    <div class="card"><div class="card-title">9. 成功基準・まとめ</div><p>KPI・次のステップ</p></div>
+  </div>
+  <span class="slide-number">Slide 2 / 56</span>
+</section>
+<section class="slide section-divider" id="s3">
+  <h2>1. プロジェクト概要</h2>
+  <p>背景、目的、スコープ</p>
+  <span class="slide-number">Slide 3 / 56</span>
+</section>
+
+<section class="slide" id="s4">
+  <h2>プロジェクト背景</h2>
+  <p>SuperAppは、Django REST APIゲートウェイとPHP/Apacheストレージサービスからなる2マイクロサービスアーキテクチャのWebアプリケーションです。</p>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">ユーザー認証・管理</div><p>JWTベース認証（SimpleJWT）、ユーザー登録・検索機能</p></div>
+    <div class="card"><div class="card-title">ファイルアップロード・処理</div><p>ZIPファイル検証（許可拡張子チェック）、7zアーカイブ解凍処理</p></div>
+    <div class="card"><div class="card-title">サービスヘルスチェック</div><p>モジュール別死活監視、サービス連携確認</p></div>
+  </div>
+  <div class="highlight-box"><strong>プロジェクトID:</strong> SA-DEMO-2025 &nbsp;|&nbsp; <strong>バージョン:</strong> 1.0 &nbsp;|&nbsp; <strong>日付:</strong> 2025-06-01</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §1.1</span>
+  <span class="slide-number">Slide 4 / 56</span>
+</section>
+
+<section class="slide" id="s5">
+  <h2>デモの目的</h2>
+  <ul>
+    <li>開発ステークホルダーに対してシステムアーキテクチャとコア機能の実証</li>
+    <li>ファイルアップロードからストレージサービスへのエンドツーエンドデータフローの検証</li>
+    <li>コンテナ化環境でのサービス連携動作の確認</li>
+    <li>セキュリティ設計（ファイル検証、認証ガード）のデモンストレーション</li>
+  </ul>
+  <div class="accent-box"><strong>キーメッセージ:</strong> 本デモは、設計の妥当性と技術スタックの選択を検証することを目的としています。機能追加や本番デプロイは対象外です。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §1.2</span>
+  <span class="slide-number">Slide 5 / 56</span>
+</section>
+
+<section class="slide" id="s6">
+  <h2>スコープ内 — インクルード</h2>
+  <table>
+    <tr><th>No.</th><th>項目</th><th>説明</th></tr>
+    <tr><td>1</td><td>デモ環境構築</td><td>Docker Composeによるローカル実行環境の準備と動作確認</td></tr>
+    <tr><td>2</td><td>App1 ゲートウェイデモ</td><td>ユーザー登録、JWT認証、ファイルアップロードAPI、ヘルスチェックAPI</td></tr>
+    <tr><td>3</td><td>App2 ストレージデモ</td><td>ファイル受領、7z解凍処理、ストレージディレクトリ管理</td></tr>
+    <tr><td>4</td><td>サービス連携フロー</td><td>App1→App2間のファイルトランスポートエンドツーエンド</td></tr>
+    <tr><td>5</td><td>デモスライド作成</td><td>構成図、アーキテクチャ図、ユーザージャーニー、デモフロー</td></tr>
+    <tr><td>6</td><td>テストデータ準備</td><td>テストユーザー、サンプルZIPファイル、ヘルスチェックシナリオ</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §2.1</span>
+  <span class="slide-number">Slide 6 / 56</span>
+</section>
+
+<section class="slide" id="s7">
+  <h2>スコープ外 — エクスクルード</h2>
+  <table>
+    <tr><th>No.</th><th>項目</th><th>理由</th></tr>
+    <tr><td>1</td><td>本番環境デプロイメント</td><td>デモフェーズではローカルコンテナ環境のみ対象</td></tr>
+    <tr><td>2</td><td>フロントエンドUI開発</td><td>APIレベルでのデモンストレーションに限定</td></tr>
+    <tr><td>3</td><td>パフォーマンステスト</td><td>機能検証が主目的。負荷テストは後工程</td></tr>
+    <tr><td>4</td><td>セキュリティ監査</td><td>CTFコンテキストを踏まえた設計理解は行うが、正式な脆弱性評価は対象外</td></tr>
+    <tr><td>5</td><td>DB移行（SQLite→PostgreSQL）</td><td>既存設計の維持</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §2.2</span>
+  <span class="slide-number">Slide 7 / 56</span>
+</section>
+<section class="slide section-divider" id="s8">
+  <h2>2. システムアーキテクチャ</h2>
+  <p>2マイクロサービス構成とデータフロー</p>
+  <span class="slide-number">Slide 8 / 56</span>
+</section>
+
+<section class="slide" id="s9">
+  <h2>全体アーキテクチャ</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: Django/uWSGI<br><small>ポート 8000</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: PHP/Apache<br><small>内部通信</small></div>
+  </div>
+  <div class="flow-label" style="margin-top:1rem;">Docker Compose ネットワーク</div>
+  <div class="card-grid grid3" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">App1 — ゲートウェイ</div><p>Django 5.2 + DRF + uWSGI<br>REST API、認証、ファイル検証</p></div>
+    <div class="card"><div class="card-title">App2 — ストレージ</div><p>PHP/Apache + Archive7z<br>ファイル受領・7z解凍・ストレージ配置</p></div>
+    <div class="card"><div class="card-title">インフラ</div><p>Docker Compose<br>SQLite3（Django内蔵）<br>内部ネットワーク</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 9 / 56</span>
+</section>
+
+<section class="slide" id="s10">
+  <h2>Docker Compose 構成</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">app1 サービス</div><p><strong>イメージ:</strong> Django/uWSGI<br><strong>ポート:</strong> 8000（公開）<br><strong>DB:</strong> SQLite3（内蔵）<br><strong>役割:</strong> REST API ゲートウェイ、JWT認証、ファイル検証、App2への転送</p></div>
+    <div class="card"><div class="card-title">app2 サービス</div><p><strong>イメージ:</strong> PHP/Apache<br><strong>ポート:</strong> 内部のみ<br><strong>ストレージ:</strong> flag.txt ボリューム<br><strong>役割:</strong> ファイル受領、7z解凍、storage/&lt;id&gt;/ 配置</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">docker-compose.yaml</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">app1 (:8000)</div>
+    <span class="flow-arrow">↔</span>
+    <div class="flow-node green">app2 (internal)</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 10 / 56</span>
+</section>
+
+<section class="slide" id="s11">
+  <h2>データフロー — ファイルアップロード</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">ZIPファイル送信</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: 拡張子検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: 7z解凍</div>
+  </div>
+  <div class="flow-label">許可拡張子: .txt, .docx, .png, .jpg, .jpeg</div>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">App1 処理</div><p>1. JWT認証トークン検証<br>2. ZIPファイル拡張子チェック<br>3. 許可されたファイルをApp2へ転送<br>4. 結果をクライアントへ返却</p></div>
+    <div class="card"><div class="card-title">App2 処理</div><p>1. ファイル受領（id=ユーザーID）<br>2. 7zアーカイブ解凍処理<br>3. storage/&lt;id&gt;/ へ配置<br>4. 完了レスポンス</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 11 / 56</span>
+</section>
+
+<section class="slide" id="s12">
+  <h2>認証フロー — JWTベース</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">POST /auth/token/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">JWT アクセストークン</div>
+  </div>
+  <div class="flow-label" style="margin-top:.8rem;">トークン付きAPI呼び出し</div>
+  <div class="flow-row" style="margin-top:.8rem;">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">Authorization: Bearer &lt;token&gt;</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">認可済みAPI</div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>認証方式:</strong> djangorestframework-simplejwt — アクセストークン + リフレッシュトークンの2階層構造。トークンなしでは保護済みAPIにアクセスできません。</div>
+  <span class="attribution">出展: docs/04_pm_final/handoff_to_slides.md §3.2</span>
+  <span class="slide-number">Slide 12 / 56</span>
+</section>
+
+<section class="slide" id="s13">
+  <h2>ネットワーク構成</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">外部アクセス</div><p>クライアント → App1 (localhost:8000)<br>唯一の公開ポート</p></div>
+    <div class="card"><div class="card-title">内部通信</div><p>App1 ↔ App2<br>Docker内部ネットワーク<br>外部からはアクセス不可</p></div>
+    <div class="card"><div class="card-title">データ永続化</div><p>App1: SQLite3（コンテナ内）<br>App2: flag.txt ボリュームマウント</p></div>
+  </div>
+  <div class="accent-box"><strong>セキュリティ:</strong> App2は外部から直接アクセスできません。すべてのリクエストはApp1ゲートウェイ経由で処理されます。</div>
+  <div class="highlight-box"><strong>ポート公開:</strong> App1: 8000（外部公開）&nbsp;|&nbsp; App2: 内部のみ</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 13 / 56</span>
+</section>
+
+<section class="slide" id="s14">
+  <h2>ストレージ構成</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">App1 — SQLite3</div><p>ユーザーデータ保存<br>Django内蔵データベース<br>デモ規模で十分な性能</p></div>
+    <div class="card"><div class="card-title">App2 — ファイルストレージ</div><p>storage/&lt;id&gt;/ ディレクトリ<br>7z解凍済みファイル配置<br>flag.txt ボリュームマウント</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">ZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: 検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: 7z解凍</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">storage/&lt;id&gt;/</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 14 / 56</span>
+</section>
+<section class="slide section-divider" id="s15">
+  <h2>3. 技術スタック</h2>
+  <p>Django・PHP・Docker Compose</p>
+  <span class="slide-number">Slide 15 / 56</span>
+</section>
+
+<section class="slide" id="s16">
+  <h2>App1 — ゲートウェイ技術スタック</h2>
+  <table>
+    <tr><th>コンポーネント</th><th>技術</th><th>バージョン</th><th>役割</th></tr>
+    <tr><td>フレームワーク</td><td>Django</td><td>5.2</td><td>Webアプリケーションフレームワーク</td></tr>
+    <tr><td>API</td><td>Django REST Framework</td><td>最新</td><td>RESTful API構築</td></tr>
+    <tr><td>WSGI</td><td>uWSGI</td><td>cheaperモード</td><td>アプリケーションサーバー</td></tr>
+    <tr><td>認証</td><td>SimpleJWT</td><td>最新</td><td>JWTトークン発行・検証</td></tr>
+    <tr><td>DB</td><td>SQLite3</td><td>Django内蔵</td><td>ユーザーデータ保存</td></tr>
+  </table>
+  <div class="highlight-box"><strong>uWSGI cheaperモード:</strong> リクエスト量に応じた自動プロセス調整により、リソース効率的な運用を実現します。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 16 / 56</span>
+</section>
+
+<section class="slide" id="s17">
+  <h2>App2 — ストレージ技術スタック</h2>
+  <table>
+    <tr><th>コンポーネント</th><th>技術</th><th>役割</th></tr>
+    <tr><td>言語</td><td>PHP</td><td>サーバーサイドスクリプト</td></tr>
+    <tr><td>Webサーバー</td><td>Apache</td><td>HTTPリクエスト処理</td></tr>
+    <tr><td>アーカイブ</td><td>Archive7z</td><td>7z形式の解凍処理</td></tr>
+    <tr><td>ストレージ</td><td>ファイルシステム</td><td>storage/&lt;id&gt;/ ディレクトリ構造</td></tr>
+    <tr><td>永続化</td><td>Dockerボリューム</td><td>flag.txt マウント</td></tr>
+  </table>
+  <div class="accent-box"><strong>設計方針:</strong> App2は最小限の機能に特化しています。ファイル受領・解凍・配置の3ステップのみを担当し、外部からの直接アクセスを受け付けません。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 17 / 56</span>
+</section>
+
+<section class="slide" id="s18">
+  <h2>インフラストラクチャ</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">コンテナ编排</div><p>Docker Compose<br>docker-compose.yaml<br>ワンコマンド起動・停止</p></div>
+    <div class="card"><div class="card-title">ネットワーク</div><p>Docker内部ネットワーク<br>app1 ↔ app2<br>ポート 8000 公開</p></div>
+    <div class="card"><div class="card-title">データベース</div><p>SQLite3（Django内蔵）<br>ユーザーデータ保存<br>デモ規模対応</p></div>
+    <div class="card"><div class="card-title">認証</div><p>JWT（SimpleJWT）<br>トークンベース認証<br>アクセストークン + リフレッシュ</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 18 / 56</span>
+</section>
+
+<section class="slide" id="s19">
+  <h2>技術選定理由</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">Django + DRF</div><p>成熟したREST APIフレームワーク。豊富なエコシステムとSimpleJWTとの統合性が選定理由。</p></div>
+    <div class="card"><div class="card-title">PHP/Apache</div><p>軽量ストレージサービスとして最適。7z解凍処理とファイル配置に特化したシンプルな設計。</p></div>
+    <div class="card"><div class="card-title">Docker Compose</div><p>ローカル環境での再現性確保。ワンコマンドでの起動・停止によりデモ運用を効率化。</p></div>
+  </div>
+  <div class="highlight-box"><strong>2マイクロサービス構成のメリット:</strong> 責務分離により、ゲートウェイ（認証・検証）とストレージ（受領・解凍）を独立して開発・デプロイできます。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 19 / 56</span>
+</section>
+<section class="slide section-divider" id="s20">
+  <h2>4. APIエンドポイント</h2>
+  <p>App1ゲートウェイ + App2ストレージの詳細</p>
+  <span class="slide-number">Slide 20 / 55</span>
+</section>
+
+<section class="slide" id="s21">
+  <h2>App1 — ユーザー管理API</h2>
+  <table>
+    <tr><th>メソッド</th><th>エンドポイント</th><th>説明</th><th>認証</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td>/gateway/user/</td><td>新しいユーザーアカウントの作成</td><td>不要</td></tr>
+    <tr><td><span class="badge badge-blue">POST</span></td><td>/auth/token/</td><td>JWTアクセストークンの発行</td><td>不要</td></tr>
+    <tr><td><span class="badge badge-purple">POST</span></td><td>/auth/refresh-token/</td><td>JWTトークンの更新</td><td>リフレッシュトークン</td></tr>
+    <tr><td><span class="badge badge-orange">POST</span></td><td>/gateway/user/find/</td><td>条件ベースのユーザー検索（ページネーション付き）</td><td>Bearerトークン</td></tr>
+  </table>
+  <div class="highlight-box"><strong>ユーザー登録フロー:</strong> POST /gateway/user/ → レスポンス(username文字列) → POST /auth/token/ → レスポンス({access, refresh})</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 21 / 56</span>
+</section>
+
+<section class="slide" id="s22">
+  <h2>App1 — ファイル・ヘルスAPI</h2>
+  <table>
+    <tr><th>メソッド</th><th>エンドポイント</th><th>説明</th><th>認証</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td>/gateway/transport/</td><td>ZIPファイル検証とApp2への転送</td><td>Bearerトークン</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td>/gateway/health/</td><td>App2モジュールの死活監視</td><td>不要</td></tr>
+  </table>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">ファイルアップロード</div><p><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;<br><strong>Files:</strong> file=@sample.zip<br><strong>期待レスポンス:</strong> "OK"</p></div>
+    <div class="card"><div class="card-title">ヘルスチェック</div><p><strong>パラメータ:</strong> module=/health.php<br><strong>期待レスポンス:</strong> "OK"（プレーン文字列）<br><strong>用途:</strong> モジュール別死活監視</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 22 / 56</span>
+</section>
+
+<section class="slide" id="s23">
+  <h2>App2 — ストレージAPI</h2>
+  <table>
+    <tr><th>メソッド</th><th>エンドポイント</th><th>説明</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td>/storage.php</td><td>ZIPファイル受領（id=ユーザーID、file=ファイル）、7z解凍、ストレージ配置（storage/&lt;id&gt;/）</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td>/health.php</td><td>サービス死活確認</td></tr>
+  </table>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">ファイル受領処理</div><p>パラメータ: id（ユーザーID）, file（ZIPファイル）<br>処理フロー: 受領 → 7z解凍 → storage/&lt;id&gt;/ へ配置</p></div>
+    <div class="card"><div class="card-title">ストレージ構造</div><p>storage/<br>├── &lt;user-1&gt;/<br>&nbsp;&nbsp;├── extracted_file1.txt<br>&nbsp;&nbsp;└── extracted_file2.png<br>└── &lt;user-2&gt;/<br>&nbsp;&nbsp;└── ...</p></div>
+  </div>
+  <div class="accent-box"><strong>注意:</strong> App2はApp1からの内部通信のみ受け付けます。外部からの直接アクセスはできません。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 23 / 56</span>
+</section>
+
+<section class="slide" id="s24">
+  <h2>API認証マトリクス</h2>
+  <table>
+    <tr><th>エンドポイント</th><th>認証方式</th><th>トークン必須</th></tr>
+    <tr><td>POST /gateway/user/</td><td>—</td><td>❌</td></tr>
+    <tr><td>POST /auth/token/</td><td>—</td><td>❌</td></tr>
+    <tr><td>POST /auth/refresh-token/</td><td>リフレッシュトークン</td><td>✅</td></tr>
+    <tr><td>POST /gateway/transport/</td><td>Bearer アクセストークン</td><td>✅</td></tr>
+    <tr><td>POST /gateway/user/find/</td><td>Bearer アクセストークン</td><td>✅</td></tr>
+    <tr><td>GET /gateway/health/</td><td>—</td><td>❌</td></tr>
+  </table>
+  <div class="highlight-box"><strong>セキュリティ設計:</strong> 機微な操作（ファイルアップロード、ユーザー検索）はJWTアクセストークンで保護されています。トークンなしまたは無効トークンでのアクセスは拒否されます。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 24 / 56</span>
+</section>
+
+<section class="slide" id="s25">
+  <h2>ファイル検証ルール</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">許可拡張子</div><p>.txt<br>.docx<br>.png<br>.jpg<br>.jpeg</p></div>
+    <div class="card"><div class="card-title">検証フロー</div><p>1. ZIPファイル受信<br>2. 内部ファイルの拡張子チェック<br>3. 許可外の拡張子 → 拒否<br>4. 許可 → App2へ転送</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">ZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">拡張子チェック</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">許可 → App2</div>
+  </div>
+  <div class="flow-row" style="margin-top:.5rem;">
+    <div class="flow-node">ZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">拡張子チェック</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node" style="background:#fee2e2;border-color:#991b1b;color:#991b1b;">拒否 → エラー</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §5</span>
+  <span class="slide-number">Slide 25 / 56</span>
+</section>
+
+<section class="slide" id="s26">
+  <h2>APIレスポンス形式</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">ユーザー登録</div><p><strong>POST /gateway/user/</strong><br>Body: {username, email, password}<br>→ username文字列</p></div>
+    <div class="card"><div class="card-title">トークン取得</div><p><strong>POST /auth/token/</strong><br>Body: {username, password}<br>→ {access, refresh}</p></div>
+    <div class="card"><div class="card-title">ファイルアップロード</div><p><strong>POST /gateway/transport/</strong><br>Headers: Bearer &lt;token&gt;<br>→ "OK"</p></div>
+    <div class="card"><div class="card-title">ヘルスチェック</div><p><strong>GET /gateway/health/</strong><br>module=/health.php<br>→ "OK"（プレーン文字列）</p></div>
+    <div class="card"><div class="card-title">ユーザー検索</div><p><strong>POST /gateway/user/find/</strong><br>Body: {username: "xxx"}<br>→ ユーザーリスト</p></div>
+    <div class="card"><div class="card-title">ストレージ</div><p><strong>POST /storage.php</strong><br>id=ユーザーID, file=ファイル<br>→ 解凍結果</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 26 / 56</span>
+</section>
+<section class="slide section-divider" id="s27">
+  <h2>5. デモフロー</h2>
+  <p>8ステップ・ユーザージャーニーとワウモーメント</p>
+  <span class="slide-number">Slide 27 / 56</span>
+</section>
+
+<section class="slide" id="s28">
+  <h2>デモフロー全体像</h2>
+  <div class="flow-row">
+    <div class="flow-node">① 環境起動</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">② ヘルスチェック</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">③ ユーザー登録</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">④ トークン取得</div>
+  </div>
+  <div class="flow-row" style="margin-top:1rem;">
+    <div class="flow-node warm">⑤ ファイルアップロード</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">⑥ ストレージ確認</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">⑦ ユーザー検索</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">⑧ 環境停止</div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>総実行時間:</strong> 目標60分 ±10% &nbsp;|&nbsp; <strong>環境:</strong> ローカルDocker Compose &nbsp;|&nbsp; <strong>方式:</strong> APIレベル（UIなし）</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 28 / 56</span>
+</section>
+
+<section class="slide" id="s29">
+  <h2>ステップ1-2: 環境起動・ヘルスチェック</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">ステップ1: 環境起動</div><p><strong>コマンド:</strong> docker compose up<br><strong>期待結果:</strong> 全サービス即時稼働<br><strong>確認:</strong> 両コンテナのステータスがrunning</p></div>
+    <div class="card"><div class="card-title">ステップ2: ヘルスチェック</div><p><strong>リクエスト:</strong> GET /gateway/health/?module=/health.php<br><strong>期待結果:</strong> "OK"（プレーン文字列）<br><strong>確認:</strong> App1とApp2の両方が応答</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">docker compose up</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: running</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: running</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">ヘルスチェック OK</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 29 / 56</span>
+</section>
+
+<section class="slide" id="s30">
+  <h2>ステップ3-4: ユーザー登録・トークン取得</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">ステップ3: ユーザー登録</div><p><strong>リクエスト:</strong> POST /gateway/user/<br><strong>Body:</strong> {username, email, password}<br><strong>期待結果:</strong> username文字列</p></div>
+    <div class="card"><div class="card-title">ステップ4: トークン取得</div><p><strong>リクエスト:</strong> POST /auth/token/<br><strong>Body:</strong> {username, password}<br><strong>期待結果:</strong> {access, refresh}</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">ユーザー情報</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">POST /gateway/user/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">POST /auth/token/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">JWTトークン取得</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 30 / 56</span>
+</section>
+
+<section class="slide" id="s31">
+  <h2>ステップ5: ファイルアップロード</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">リクエスト詳細</div><p><strong>エンドポイント:</strong> POST /gateway/transport/<br><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;<br><strong>Files:</strong> file=@sample.zip<br><strong>期待結果:</strong> "OK"</p></div>
+    <div class="card"><div class="card-title">内部処理フロー</div><p>1. JWTトークン検証<br>2. ZIPファイルの拡張子チェック<br>3. 許可済み → App2へPOST転送<br>4. App2: 7z解凍 + storage/&lt;id&gt;/ 配置<br>5. 完了レスポンス返却</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">sample.zip</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: 認証 + 検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: 7z解凍</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">"OK"</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 31 / 56</span>
+</section>
+
+<section class="slide" id="s32">
+  <h2>ステップ6: ストレージ確認</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">確認手順</div><p>App2の storage/&lt;user-id&gt;/ ディレクトリに移動し、解凍済みファイルの存在を確認します。</p></div>
+    <div class="card"><div class="card-title">期待されるディレクトリ構造</div><p>storage/<br>└── &lt;user-id&gt;/<br>&nbsp;&nbsp;├── file1.txt<br>&nbsp;&nbsp;├── file2.png<br>&nbsp;&nbsp;└── file3.docx</p></div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>確認ポイント:</strong> アップロードしたZIPファイル内のすべてのファイルが、正しいユーザーIDディレクトリに解凍・配置されていることを確認します。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 32 / 56</span>
+</section>
+
+<section class="slide" id="s33">
+  <h2>ステップ7-8: ユーザー検索・環境停止</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">ステップ7: ユーザー検索</div><p><strong>リクエスト:</strong> POST /gateway/user/find/?offset=0<br><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;<br><strong>Body:</strong> {username: "xxx"}<br><strong>期待結果:</strong> ユーザーリスト</p></div>
+    <div class="card"><div class="card-title">ステップ8: 環境停止</div><p><strong>コマンド:</strong> docker compose down<br><strong>期待結果:</strong> 全コンテナの停止<br><strong>確認:</strong> docker compose ps で空</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">認証付き検索</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">POST /gateway/user/find/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">ユーザーリスト</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">docker compose down</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 33 / 56</span>
+</section>
+
+<section class="slide" id="s34">
+  <h2>ワウモーメント — 5つのハイライト</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">① ワンコマンド起動</div><p><code>docker compose up</code> で全サービス即時稼働。<br><strong>反応:</strong> 「シンプルで良い」</p></div>
+    <div class="card"><div class="card-title">② エンドツーエンドファイルフロー</div><p>アップロードから解凍まで自動処理。<br><strong>反応:</strong> 2サービス連携のスムーズさ</p></div>
+    <div class="card"><div class="card-title">③ 認証ガード付きAPI</div><p>JWTトークンなしではアクセス不可。<br><strong>反応:</strong> セキュリティ設計の意識</p></div>
+    <div class="card"><div class="card-title">④ ファイル検証</div><p>許可拡張子のみ受け付けるバリデーション。<br><strong>反応:</strong> セキュリティフィルタリング</p></div>
+    <div class="card"><div class="card-title">⑤ ダイナミックスケーリング</div><p>uWSGIのcheaperモードによる自動プロセス調整。<br><strong>反応:</strong> 運用効率への配慮</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.2</span>
+  <span class="slide-number">Slide 34 / 56</span>
+</section>
+
+<section class="slide" id="s35">
+  <h2>デモフローまとめ</h2>
+  <table>
+    <tr><th>ステップ</th><th>操作</th><th>コマンド/エンドポイント</th><th>期待結果</th></tr>
+    <tr><td>1</td><td>環境起動</td><td>docker compose up</td><td>両サービスrunning</td></tr>
+    <tr><td>2</td><td>ヘルスチェック</td><td>GET /gateway/health/</td><td>"OK"</td></tr>
+    <tr><td>3</td><td>ユーザー登録</td><td>POST /gateway/user/</td><td>username文字列</td></tr>
+    <tr><td>4</td><td>トークン取得</td><td>POST /auth/token/</td><td>{access, refresh}</td></tr>
+    <tr><td>5</td><td>ファイルアップロード</td><td>POST /gateway/transport/</td><td>"OK"</td></tr>
+    <tr><td>6</td><td>ストレージ確認</td><td>storage/&lt;id&gt;/ 確認</td><td>解凍済みファイル</td></tr>
+    <tr><td>7</td><td>ユーザー検索</td><td>POST /gateway/user/find/</td><td>ユーザーリスト</td></tr>
+    <tr><td>8</td><td>環境停止</td><td>docker compose down</td><td>全コンテナ停止</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 35 / 56</span>
+</section>
+<section class="slide section-divider" id="s36">
+  <h2>6. タイムライン</h2>
+  <p>スケジュール・マイルストーン</p>
+  <span class="slide-number">Slide 36 / 56</span>
+</section>
+
+<section class="slide" id="s37">
+  <h2>プロジェクトスケジュール</h2>
+  <table>
+    <tr><th>フェーズ</th><th>開始</th><th>終了</th><th>期間</th><th>依存</th><th>責任者</th></tr>
+    <tr><td>フェーズ1: 環境準備</td><td>06-02</td><td>06-03</td><td>2日</td><td>-</td><td>Dev Lead</td></tr>
+    <tr><td>フェーズ2: テストデータ準備</td><td>06-02</td><td>06-04</td><td>3日</td><td>フェーズ1</td><td>Dev Team</td></tr>
+    <tr><td>フェーズ3: デモリハーサル</td><td>06-05</td><td>06-06</td><td>2日</td><td>フェーズ1, 2</td><td>Dev Lead</td></tr>
+    <tr><td>フェーズ4: スライド作成</td><td>06-02</td><td>06-07</td><td>6日</td><td>-</td><td>PM</td></tr>
+    <tr><td>フェーズ5: 最終確認</td><td>06-09</td><td>06-09</td><td>1日</td><td>フェーズ3, 4</td><td>PM + Dev Lead</td></tr>
+    <tr><td>フェーズ6: デモ実施</td><td>06-10</td><td>06-10</td><td>1日</td><td>フェーズ5</td><td>PM + Dev Lead</td></tr>
+  </table>
+  <div class="accent-box"><strong>デモ期間:</strong> 2025-06-02 〜 2025-06-10（10営業日、20%バッファ含む）</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1</span>
+  <span class="slide-number">Slide 37 / 56</span>
+</section>
+
+<section class="slide" id="s38">
+  <h2>Ganttチャート</h2>
+  <div class="gantt-wrap">
+    <div class="gantt-row"><span class="gantt-label">フェーズ1: 環境準備</span><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:20%;background:#003087"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ2: テストデータ準備</span><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:30%;background:#0072CE"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ3: デモリハーサル</span><div class="gantt-track"><div class="gantt-bar" style="left:30%;width:20%;background:#003087"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ4: スライド作成</span><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:60%;background:#0072CE"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M1: 環境動作確認</span><div class="gantt-track"><div class="gantt-bar" style="left:20%;width:1%;background:#dc2626"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M2: E2Eテスト成功</span><div class="gantt-track"><div class="gantt-bar" style="left:30%;width:1%;background:#dc2626"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ5: 最終確認</span><div class="gantt-track"><div class="gantt-bar" style="left:70%;width:10%;background:#FF6B00"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ6: デモ実施</span><div class="gantt-track"><div class="gantt-bar" style="left:90%;width:10%;background:#FF6B00"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M3: スライド完成</span><div class="gantt-track"><div class="gantt-bar" style="left:60%;width:1%;background:#dc2626"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M5: デモ実施</span><div class="gantt-track"><div class="gantt-bar" style="left:95%;width:1%;background:#dc2626"></div></div></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1-4.2</span>
+  <span class="slide-number">Slide 38 / 56</span>
+</section>
+
+<section class="slide" id="s39">
+  <h2>マイルストーン</h2>
+  <table>
+    <tr><th>マイルストーン</th><th>ターゲット日</th><th>完了基準</th></tr>
+    <tr><td>M1: 環境動作確認完了</td><td>2025-06-03</td><td>Docker Compose起動、両サービスヘルスOK</td></tr>
+    <tr><td>M2: エンドツーエンドテスト成功</td><td>2025-06-05</td><td>ファイルアップロード→解凍の全フロー確認</td></tr>
+    <tr><td>M3: スライド完成</td><td>2025-06-07</td><td>構成図、フロー図、デモスクリプト完成</td></tr>
+    <tr><td>M4: 最終リハーサル完了</td><td>2025-06-09</td><td>全チームでの通し演習完了</td></tr>
+    <tr><td>M5: デモ実施</td><td>2025-06-10</td><td>ステークホルダーへのデモ完了</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.2</span>
+  <span class="slide-number">Slide 39 / 56</span>
+</section>
+
+<section class="slide" id="s40">
+  <h2>依存関係と关键パス</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">关键パス</div><p>環境準備 → テストデータ準備 → デモリハーサル → 最終確認 → デモ実施</p></div>
+    <div class="card"><div class="card-title">並列実行可能</div><p>スライド作成（フェーズ4）は他のフェーズと並列実行可能</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node accent">環境準備</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">テストデータ</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">リハーサル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">最終確認</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">デモ実施</div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>20%バッファ:</strong> スケジュールには20%のバッファが含まれています。予期せぬ問題が発生しても、デモ実施日（06-10）に影響しないよう設計されています。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1</span>
+  <span class="slide-number">Slide 40 / 56</span>
+</section>
+
+<section class="slide" id="s41">
+  <h2>フェーズ詳細 — 環境準備</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">フェーズ1: 環境準備</div><p><strong>期間:</strong> 06-02 〜 06-03（2日）<br><strong>責任者:</strong> Dev Lead<br><strong>タスク:</strong><br>• Docker Compose環境構築<br>• App1, App2の起動確認<br>• ヘルスチェック動作確認</p></div>
+    <div class="card"><div class="card-title">フェーズ2: テストデータ準備</div><p><strong>期間:</strong> 06-02 〜 06-04（3日）<br><strong>責任者:</strong> Dev Team<br><strong>タスク:</strong><br>• テストユーザー作成<br>• サンプルZIPファイル準備<br>• APIテストケース対応</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1</span>
+  <span class="slide-number">Slide 41 / 56</span>
+</section>
+<section class="slide section-divider" id="s42">
+  <h2>7. チーム構成</h2>
+  <p>RACIマトリクスと役割分担</p>
+  <span class="slide-number">Slide 42 / 56</span>
+</section>
+
+<section class="slide" id="s43">
+  <h2>RACIマトリクス</h2>
+  <table>
+    <tr><th>活動</th><th>PM</th><th>Dev Lead</th><th>Dev Team</th><th>QA</th><th>ステークホルダー</th></tr>
+    <tr><td>環境構築</td><td>A</td><td>R</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>テストデータ準備</td><td>A</td><td>R</td><td>R</td><td>C</td><td>I</td></tr>
+    <tr><td>デモスクリプト作成</td><td>A</td><td>R</td><td>C</td><td>I</td><td>C</td></tr>
+    <tr><td>スライド作成</td><td>R</td><td>C</td><td>I</td><td>I</td><td>C</td></tr>
+    <tr><td>リハーサル実施</td><td>A</td><td>R</td><td>R</td><td>C</td><td>I</td></tr>
+    <tr><td>デモ実施</td><td>R</td><td>R</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>フィードバック収集</td><td>R</td><td>C</td><td>I</td><td>I</td><td>R</td></tr>
+  </table>
+  <div class="highlight-box"><strong>R</strong>=責任者(Responsible) &nbsp; <strong>A</strong>=担当事者(Accountable) &nbsp; <strong>C</strong>=協議者(Consulted) &nbsp; <strong>I</strong>=情報共有(Informed)</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §5.1</span>
+  <span class="slide-number">Slide 43 / 56</span>
+</section>
+
+<section class="slide" id="s44">
+  <h2>役割分担</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">PM</div><p><strong>主な責任:</strong><br>• スケジュール管理<br>• ステークホルダー調整<br>• ドキュメント作成<br>• スライド作成</p></div>
+    <div class="card"><div class="card-title">Dev Lead</div><p><strong>主な責任:</strong><br>• 環境構築<br>• デモ技術責任<br>• トラブルシューティング<br>• デモスクリプト作成</p></div>
+    <div class="card"><div class="card-title">Dev Team</div><p><strong>主な責任:</strong><br>• テストデータ準備<br>• APIテスト<br>• 障害修正<br>• リハーサル参加</p></div>
+    <div class="card"><div class="card-title">QA</div><p><strong>主な責任:</strong><br>• テストケースレビュー<br>• デモ動作検証<br>• 品質確認</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1rem;">
+    <div class="flow-node">ステークホルダー</div>
+    <span class="flow-label" style="margin:0 0.5rem;">要件確認・デモ参加・フィードバック</span>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §5.2</span>
+  <span class="slide-number">Slide 44 / 56</span>
+</section>
+
+<section class="slide" id="s45">
+  <h2>コミュニケーション体制</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">日次進捗確認</div><p>Dev Lead主導の短いスタンドアップ。環境構築・テストデータの進捗共有。</p></div>
+    <div class="card"><div class="card-title">週次ステークホルダーMTG</div><p>PM主導。進捗報告、課題共有、フィードバック収集。</p></div>
+    <div class="card"><div class="card-title">緊急対応</div><p>ブロックしている課題は即座にDev LeadまたはPMへエスカレーション。</p></div>
+  </div>
+  <div class="accent-box"><strong>エスカレーションパス:</strong> Dev Team → Dev Lead → PM → ステークホルダー</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §5</span>
+  <span class="slide-number">Slide 45 / 56</span>
+</section>
+<section class="slide section-divider" id="s46">
+  <h2>8. リスク管理</h2>
+  <p>リスクレジスターと軽減策</p>
+  <span class="slide-number">Slide 46 / 56</span>
+</section>
+
+<section class="slide" id="s47">
+  <h2>リスクレジスター — 高リスク</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>軽減策</th><th>責任者</th></tr>
+    <tr><td>R1</td><td>Docker Compose環境の起動失敗</td><td>中</td><td>高</td><td><span class="badge badge-red">高</span></td><td>事前に複数回起動テスト、代替環境の準備</td><td>Dev Lead</td></tr>
+    <tr><td>R6</td><td>ステークホルダーのスケジュール調整困難</td><td>中</td><td>高</td><td><span class="badge badge-red">高</span></td><td>候補日程を複数提示、録画対応準備</td><td>PM</td></tr>
+  </table>
+  <div class="accent-box"><strong>対応方針:</strong> 高リスク項目には事前テストと代替手段の両方を準備します。特にDocker環境の安定性はデモ成功の前提条件です。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §6.1</span>
+  <span class="slide-number">Slide 47 / 56</span>
+</section>
+
+<section class="slide" id="s48">
+  <h2>リスクレジスター — 中リスク</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>軽減策</th><th>責任者</th></tr>
+    <tr><td>R2</td><td>ファイルアップロードのタイムアウト</td><td>低</td><td>中</td><td><span class="badge badge-orange">中</span></td><td>タイムアウト値の調整、小サイズテストファイル使用</td><td>Dev Lead</td></tr>
+    <tr><td>R3</td><td>JWT認証トークンの期限切れ</td><td>中</td><td>中</td><td><span class="badge badge-orange">中</span></td><td>デモ前にトークン再発行、リフレッシュフロー準備</td><td>Dev Team</td></tr>
+    <tr><td>R5</td><td>デモ当日のネットワーク障害</td><td>低</td><td>高</td><td><span class="badge badge-orange">中</span></td><td>ローカル環境実行、オフライン対応準備</td><td>Dev Lead</td></tr>
+    <tr><td>R7</td><td>App2のPHPサービス応答遅延</td><td>中</td><td>中</td><td><span class="badge badge-orange">中</span></td><td>ヘルスチェックで事前確認、リトライロジック準備</td><td>Dev Lead</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §6.1</span>
+  <span class="slide-number">Slide 48 / 56</span>
+</section>
+
+<section class="slide" id="s49">
+  <h2>リスクレジスター — 低リスク</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>軽減策</th><th>責任者</th></tr>
+    <tr><td>R4</td><td>7z解凍処理の失敗（不正ファイル）</td><td>低</td><td>中</td><td><span class="badge badge-green">低</span></td><td>バリデーション済みテストファイルのみ使用</td><td>Dev Team</td></tr>
+  </table>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">リスク監視</div><p>全リスクはOpenステータス。デモリハーサル（フェーズ3）で再評価し、必要に応じて軽減策を更新します。</p></div>
+    <div class="card"><div class="card-title">エスカレーション</div><p>軽減策が効果的でない場合、Dev Lead → PM → ステークホルダーの順でエスカレーションします。</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §6.1</span>
+  <span class="slide-number">Slide 49 / 56</span>
+</section>
+<section class="slide section-divider" id="s50">
+  <h2>9. 成功基準・まとめ</h2>
+  <p>KPI・仮定条件・制約</p>
+  <span class="slide-number">Slide 50 / 56</span>
+</section>
+
+<section class="slide" id="s51">
+  <h2>成功基準</h2>
+  <table>
+    <tr><th>No.</th><th>成功基準</th><th>測定方法</th><th>ターゲット</th></tr>
+    <tr><td>1</td><td>Docker Compose環境の正常起動</td><td>両サービスヘルスチェック</td><td>100%（3回/3回）</td></tr>
+    <tr><td>2</td><td>ユーザー登録→認証→アップロードの全フロー完了</td><td>エンドツーエンドテストケース</td><td>100%</td></tr>
+    <tr><td>3</td><td>App2での7z解凍結果の確認</td><td>ストレージディレクトリ確認</td><td>100%</td></tr>
+    <tr><td>4</td><td>ステークホルダーの満足度</td><td>デモ後のフィードバック調査</td><td>4/5以上</td></tr>
+    <tr><td>5</td><td>デモ時間の遵守</td><td>時計測</td><td>目標60分 ±10%</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §7</span>
+  <span class="slide-number">Slide 51 / 56</span>
+</section>
+
+<section class="slide" id="s52">
+  <h2>仮定条件</h2>
+  <table>
+    <tr><th>ID</th><th>仮定条件</th><th>影響度</th><th>検証方法</th></tr>
+    <tr><td>A1</td><td>DockerおよびDocker Composeが実行環境にインストール済み</td><td>高</td><td>デモ前確認</td></tr>
+    <tr><td>A2</td><td>localhost:8000 が利用可能</td><td>高</td><td>ポート競合チェック</td></tr>
+    <tr><td>A3</td><td>テスト用ZIPファイルは許可拡張子のみを含む</td><td>中</td><td>ファイル検証テスト</td></tr>
+    <tr><td>A4</td><td>ローカルネットワークの安定性</td><td>高</td><td>事前接続テスト</td></tr>
+    <tr><td>A5</td><td>SQLite3でデモ規模データ処理が可能</td><td>低</td><td>負荷テスト（簡易）</td></tr>
+    <tr><td>A6</td><td>ステークホルダーはデモ日に参加可能</td><td>高</td><td>日程調整メール</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §5</span>
+  <span class="slide-number">Slide 52 / 56</span>
+</section>
+
+<section class="slide" id="s53">
+  <h2>制約条件</h2>
+  <table>
+    <tr><th>ID</th><th>制約</th><th>説明</th></tr>
+    <tr><td>C1</td><td>コード変更不可</td><td>既存コードベースをデモ用に修正しない</td></tr>
+    <tr><td>C2</td><td>データベース固定</td><td>SQLite3の使用を維持</td></tr>
+    <tr><td>C3</td><td>APIレベルデモ</td><td>フロントエンドUIは提供しない</td></tr>
+    <tr><td>C4</td><td>ローカル環境</td><td>外部デプロイメントは行わない</td></tr>
+    <tr><td>C5</td><td>タイムリミット</td><td>デモ実施は60分以内</td></tr>
+  </table>
+  <div class="accent-box"><strong>重要な制約:</strong> 既存のコードベースは一切変更しません。デモは既存システムの設計検証が目的であり、機能追加や修正は行いません。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §6</span>
+  <span class="slide-number">Slide 53 / 56</span>
+</section>
+<section class="slide section-divider" id="s54">
+  <h2>10. 次のステップ</h2>
+  <p>アクション・オーナー・日程</p>
+  <span class="slide-number">Slide 54 / 56</span>
+</section>
+
+<section class="slide" id="s55">
+  <h2>次のステップ</h2>
+  <table>
+    <tr><th>No.</th><th>アクション</th><th>オーナー</th><th>期限</th><th>ステータス</th></tr>
+    <tr><td>1</td><td>スライドドラフトのレビュー</td><td>PM</td><td>2025-06-07</td><td><span class="badge badge-blue">進行中</span></td></tr>
+    <tr><td>2</td><td>PMによるスライドレビュー</td><td>PM</td><td>2025-06-08</td><td><span class="badge badge-orange">待機中</span></td></tr>
+    <tr><td>3</td><td>最終スライド確定</td><td>PM</td><td>2025-06-08</td><td><span class="badge badge-orange">待機中</span></td></tr>
+    <tr><td>4</td><td>最終リハーサル実施</td><td>PM + Dev Lead</td><td>2025-06-09</td><td><span class="badge badge-orange">待機中</span></td></tr>
+    <tr><td>5</td><td>デモ実施</td><td>PM + Dev Lead</td><td>2025-06-10</td><td><span class="badge badge-orange">待機中</span></td></tr>
+    <tr><td>6</td><td>フィードバック収集</td><td>PM</td><td>2025-06-10</td><td><span class="badge badge-orange">待機中</span></td></tr>
+  </table>
+  <div class="highlight-box"><strong>デモ実施日:</strong> 2025年6月10日 &nbsp;|&nbsp; <strong>最終リハーサル:</strong> 2025年6月9日</div>
+  <span class="attribution">出展: docs/04_pm_final/handoff_to_slides.md §6</span>
+  <span class="slide-number">Slide 55 / 56</span>
+</section>
+
+<section class="slide" id="s56">
+  <h2>ご清聴ありがとうございました</h2>
+  <div class="card-grid grid3" style="margin-top:2rem;">
+    <div class="card"><div class="card-title">Q&amp;A</div><p>ご質問・ご意見をお待ちしております</p></div>
+    <div class="card"><div class="card-title">連絡先</div><p>PM: プロジェクトマネージャー<br>Dev Lead: 開発リード</p></div>
+    <div class="card"><div class="card-title">次回の予定</div><p>最終リハーサル: 2025-06-09<br>デモ実施: 2025-06-10</p></div>
+  </div>
+  <div class="highlight-box" style="margin-top:2rem;"><strong>SuperApp デモフェーズ</strong> — 2マイクロサービスアーキテクチャによるエンドツーエンド実証</div>
+  <span class="slide-number">Slide 56 / 56</span>
+</section>
+</div>
+<script>
+function toggleTheme(){
+  const h=document.documentElement,b=document.querySelector('.theme-toggle'),d=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',d?'light':'dark');b.textContent=d?'🌙':'☀️';
+}
+if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){
+  document.documentElement.setAttribute('data-theme','dark');
+  document.querySelector('.theme-toggle').textContent='☀️';
+}
+
+// Inject FPT brand mark (default) into every slide
+const BRAND_SVG='<svg class="brand-mark" viewBox="0 0 34 21" xmlns="http://www.w3.org/2000/svg"><path d="M6.68439 3.50089C4.75756 3.50089 3.12259 4.75793 2.55021 6.5013C2.53888 6.54111 2.52471 6.58093 2.51338 6.6179L2.41703 6.99331L0 17.499H6.08934C7.90849 17.499 9.45845 16.3415 10.0478 14.7204L10.2774 13.7193L12.6292 3.49805H6.68439V3.50089Z" fill="#08509F"/><path d="M18.1691 0C16.18 0 14.5025 1.34236 13.984 3.17389C13.9443 3.3104 13.9131 3.44976 13.8876 3.59196L9.88379 21H15.8286C17.866 21 19.5746 19.5951 20.0506 17.6981H20.0535L24.1196 0H18.1691Z" fill="#F27123"/><path d="M28.0555 3.50098C26.1967 3.50098 24.6099 4.6727 23.9865 6.31937C23.9553 6.40469 23.8448 6.75165 23.8448 6.75165L21.3711 17.5019H27.3159C29.3589 17.5019 31.0732 16.0885 31.5408 14.183L33.9975 3.50382H28.0555V3.50098Z" fill="#51B748"/><path d="M4.03217 7.37699C3.69781 7.6557 3.48246 7.99413 3.41728 8.26431L2.15918 13.9637H2.23002C2.62105 13.9637 2.98942 13.8243 3.32378 13.5484C3.66097 13.2726 3.87349 12.9341 3.95566 12.5445L4.27869 11.0969H6.97908C7.37011 11.0969 7.74131 10.9576 8.07851 10.6817C8.4157 10.4058 8.63105 10.0646 8.71606 9.67208L8.73023 9.60098H4.61305L4.86524 8.46055H8.76706C9.1581 8.46055 9.52646 8.32119 9.86366 8.04817C10.198 7.7723 10.4049 7.42818 10.4955 7.03855L10.5125 6.96745H5.12593C4.73489 6.96176 4.36653 7.10112 4.03217 7.37699Z" fill="white"/><path d="M31.52 7.30069C31.3047 7.08455 31.0213 6.97363 30.6813 6.97363H25.2975L25.289 7.02198C25.2691 7.12721 25.2578 7.22675 25.2578 7.3206C25.2578 7.6505 25.3683 7.92637 25.5837 8.14535C25.8019 8.3615 26.0824 8.47241 26.4252 8.47241H27.587L26.4196 13.9642H26.4932C26.8843 13.9642 27.2498 13.8248 27.5842 13.5518C27.9185 13.2759 28.1254 12.9375 28.2076 12.545L29.0718 8.46957H31.809L31.8175 8.42122C31.8374 8.32168 31.8487 8.21645 31.8487 8.11407C31.8459 7.78986 31.7354 7.51683 31.52 7.30069Z" fill="white"/><path d="M19.7101 6.96223H16.0718L16.0747 6.95654H14.5785L13.0938 13.9641H13.1646C13.5556 13.9641 13.924 13.8248 14.2555 13.5489C14.587 13.273 14.7967 12.9346 14.8789 12.545L15.1821 11.1059H18.8544C19.2454 11.1059 19.611 10.9666 19.9453 10.6935C20.2768 10.4205 20.4894 10.0792 20.5772 9.68108L20.8521 8.41551C20.8719 8.31597 20.8832 8.21359 20.8832 8.10836C20.8832 7.78414 20.7727 7.51112 20.5517 7.29213C20.3364 7.07315 20.0502 6.96223 19.7101 6.96223ZM15.7488 8.46101H19.3531L19.1038 9.60714H15.4995L15.7488 8.46101Z" fill="white"/></svg>';
+document.querySelectorAll('.slide').forEach(s=>{if(!s.querySelector('.brand-mark'))s.insertAdjacentHTML('beforeend',BRAND_SVG);});
+
+// Wrap each slide for viewport scaling
+document.querySelectorAll('.slide').forEach(s=>{
+  const w=document.createElement('div');w.className='slide-wrap';
+  s.parentNode.insertBefore(w,s);w.appendChild(s);
+});
+
+// Build thumbnail sidebar
+const thumbNav=document.getElementById('thumb-nav');
+const slides=document.querySelectorAll('.slide');
+slides.forEach((s,i)=>{
+  const t=document.createElement('div');t.className='thumb';t.dataset.idx=i;
+  t.innerHTML='<span class="thumb-num">'+(i+1)+'</span>';
+  const inner=document.createElement('div');inner.className='thumb-inner';
+  inner.appendChild(s.cloneNode(true));
+  t.appendChild(inner);
+  t.onclick=()=>slides[i].scrollIntoView({behavior:'smooth',block:'start'});
+  thumbNav.appendChild(t);
+});
+const thumbs=thumbNav.querySelectorAll('.thumb');
+function toggleThumbs(){document.body.classList.toggle('thumbs-open');thumbNav.classList.toggle('open');setTimeout(applyScale,0);}
+function highlightThumb(){
+  const i=currentIndex();thumbs.forEach((t,j)=>t.classList.toggle('active',j===i));
+  const a=thumbs[i];if(a&&thumbNav.classList.contains('open')){
+    const r=a.getBoundingClientRect(),nr=thumbNav.getBoundingClientRect();
+    if(r.top<nr.top||r.bottom>nr.bottom)a.scrollIntoView({block:'nearest'});
+  }
+}
+
+function applyScale(){
+  const navH=54,sideW=document.body.classList.contains('thumbs-open')?220:0;
+  const vw=window.innerWidth-sideW,vh=window.innerHeight-navH;
+  const scale=Math.min(vw/1920,vh/1080,1);
+  document.documentElement.style.setProperty('--scale',scale);
+  document.documentElement.style.setProperty('--scaled-w',(1920*scale)+'px');
+  document.documentElement.style.setProperty('--scaled-h',(1080*scale)+'px');
+}
+applyScale();window.addEventListener('resize',applyScale);
+
+function currentIndex(){
+  const y=window.scrollY+window.innerHeight/2;
+  for(let i=0;i<slides.length;i++){
+    const r=slides[i].getBoundingClientRect();
+    if(r.top+window.scrollY<=y&&r.bottom+window.scrollY>=y)return i;
+  }
+  return 0;
+}
+function updateNav(){const p=document.getElementById('nav-pos');if(p)p.textContent=(currentIndex()+1)+' / '+slides.length;highlightThumb();}
+function prevSlide(){const i=currentIndex();if(i>0)slides[i-1].scrollIntoView({behavior:'smooth'});}
+function nextSlide(){const i=currentIndex();if(i<slides.length-1)slides[i+1].scrollIntoView({behavior:'smooth'});}
+window.addEventListener('scroll',updateNav);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nextSlide();if(e.key==='ArrowLeft'||e.key==='ArrowUp')prevSlide();});
+updateNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<section class="slide section-divider" id="s15">
+  <h2>3. 技術スタック</h2>
+  <p>Django・PHP・Docker Compose</p>
+  <span class="slide-number">Slide 15 / 56</span>
+</section>
+
+<section class="slide" id="s16">
+  <h2>App1 — ゲートウェイ技術スタック</h2>
+  <table>
+    <tr><th>コンポーネント</th><th>技術</th><th>バージョン</th><th>役割</th></tr>
+    <tr><td>フレームワーク</td><td>Django</td><td>5.2</td><td>Webアプリケーションフレームワーク</td></tr>
+    <tr><td>API</td><td>Django REST Framework</td><td>最新</td><td>RESTful API構築</td></tr>
+    <tr><td>WSGI</td><td>uWSGI</td><td>cheaperモード</td><td>アプリケーションサーバー</td></tr>
+    <tr><td>認証</td><td>SimpleJWT</td><td>最新</td><td>JWTトークン発行・検証</td></tr>
+    <tr><td>DB</td><td>SQLite3</td><td>Django内蔵</td><td>ユーザーデータ保存</td></tr>
+  </table>
+  <div class="highlight-box"><strong>uWSGI cheaperモード:</strong> リクエスト量に応じた自動プロセス調整により、リソース効率的な運用を実現します。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 16 / 56</span>
+</section>
+
+<section class="slide" id="s17">
+  <h2>App2 — ストレージ技術スタック</h2>
+  <table>
+    <tr><th>コンポーネント</th><th>技術</th><th>役割</th></tr>
+    <tr><td>言語</td><td>PHP</td><td>サーバーサイドスクリプト</td></tr>
+    <tr><td>Webサーバー</td><td>Apache</td><td>HTTPリクエスト処理</td></tr>
+    <tr><td>アーカイブ</td><td>Archive7z</td><td>7z形式の解凍処理</td></tr>
+    <tr><td>ストレージ</td><td>ファイルシステム</td><td>storage/&lt;id&gt;/ ディレクトリ構造</td></tr>
+    <tr><td>永続化</td><td>Dockerボリューム</td><td>flag.txt マウント</td></tr>
+  </table>
+  <div class="accent-box"><strong>設計方針:</strong> App2は最小限の機能に特化しています。ファイル受領・解凍・配置の3ステップのみを担当し、外部からの直接アクセスを受け付けません。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 17 / 56</span>
+</section>
+
+<section class="slide" id="s18">
+  <h2>インフラストラクチャ</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">コンテナ编排</div><p>Docker Compose<br>docker-compose.yaml<br>ワンコマンド起動・停止</p></div>
+    <div class="card"><div class="card-title">ネットワーク</div><p>Docker内部ネットワーク<br>app1 ↔ app2<br>ポート 8000 公開</p></div>
+    <div class="card"><div class="card-title">データベース</div><p>SQLite3（Django内蔵）<br>ユーザーデータ保存<br>デモ規模対応</p></div>
+    <div class="card"><div class="card-title">認証</div><p>JWT（SimpleJWT）<br>トークンベース認証<br>アクセストークン + リフレッシュ</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 18 / 56</span>
+</section>
+
+<section class="slide" id="s19">
+  <h2>技術選定理由</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">Django + DRF</div><p>成熟したREST APIフレームワーク。豊富なエコシステムとSimpleJWTとの統合性が選定理由。</p></div>
+    <div class="card"><div class="card-title">PHP/Apache</div><p>軽量ストレージサービスとして最適。7z解凍処理とファイル配置に特化したシンプルな設計。</p></div>
+    <div class="card"><div class="card-title">Docker Compose</div><p>ローカル環境での再現性確保。ワンコマンドでの起動・停止によりデモ運用を効率化。</p></div>
+  </div>
+  <div class="highlight-box"><strong>2マイクロサービス構成のメリット:</strong> 責務分離により、ゲートウェイ（認証・検証）とストレージ（受領・解凍）を独立して開発・デプロイできます。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 19 / 56</span>
+</section>

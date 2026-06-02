@@ -1,0 +1,5 @@
+{
+    "require": {
+        "gemorroj/archive7z": "^5.8"
+    }
+}

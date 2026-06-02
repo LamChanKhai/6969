@@ -1,0 +1,85 @@
+<section class="slide section-divider" id="s36">
+  <h2>6. タイムライン</h2>
+  <p>スケジュール・マイルストーン</p>
+  <span class="slide-number">Slide 36 / 56</span>
+</section>
+
+<section class="slide" id="s37">
+  <h2>プロジェクトスケジュール</h2>
+  <table>
+    <tr><th>フェーズ</th><th>開始</th><th>終了</th><th>期間</th><th>依存</th><th>責任者</th></tr>
+    <tr><td>フェーズ1: 環境準備</td><td>06-02</td><td>06-03</td><td>2日</td><td>-</td><td>Dev Lead</td></tr>
+    <tr><td>フェーズ2: テストデータ準備</td><td>06-02</td><td>06-04</td><td>3日</td><td>フェーズ1</td><td>Dev Team</td></tr>
+    <tr><td>フェーズ3: デモリハーサル</td><td>06-05</td><td>06-06</td><td>2日</td><td>フェーズ1, 2</td><td>Dev Lead</td></tr>
+    <tr><td>フェーズ4: スライド作成</td><td>06-02</td><td>06-07</td><td>6日</td><td>-</td><td>PM</td></tr>
+    <tr><td>フェーズ5: 最終確認</td><td>06-09</td><td>06-09</td><td>1日</td><td>フェーズ3, 4</td><td>PM + Dev Lead</td></tr>
+    <tr><td>フェーズ6: デモ実施</td><td>06-10</td><td>06-10</td><td>1日</td><td>フェーズ5</td><td>PM + Dev Lead</td></tr>
+  </table>
+  <div class="accent-box"><strong>デモ期間:</strong> 2025-06-02 〜 2025-06-10（10営業日、20%バッファ含む）</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1</span>
+  <span class="slide-number">Slide 37 / 56</span>
+</section>
+
+<section class="slide" id="s38">
+  <h2>Ganttチャート</h2>
+  <div class="gantt-wrap">
+    <div class="gantt-row"><span class="gantt-label">フェーズ1: 環境準備</span><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:20%;background:#003087"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ2: テストデータ準備</span><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:30%;background:#0072CE"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ3: デモリハーサル</span><div class="gantt-track"><div class="gantt-bar" style="left:30%;width:20%;background:#003087"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ4: スライド作成</span><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:60%;background:#0072CE"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M1: 環境動作確認</span><div class="gantt-track"><div class="gantt-bar" style="left:20%;width:1%;background:#dc2626"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M2: E2Eテスト成功</span><div class="gantt-track"><div class="gantt-bar" style="left:30%;width:1%;background:#dc2626"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ5: 最終確認</span><div class="gantt-track"><div class="gantt-bar" style="left:70%;width:10%;background:#FF6B00"></div></div></div>
+    <div class="gantt-row"><span class="gantt-label">フェーズ6: デモ実施</span><div class="gantt-track"><div class="gantt-bar" style="left:90%;width:10%;background:#FF6B00"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M3: スライド完成</span><div class="gantt-track"><div class="gantt-bar" style="left:60%;width:1%;background:#dc2626"></div></div></div>
+    <div class="gantt-row gantt-sep"><span class="gantt-label" style="color:#dc2626;font-weight:700">M5: デモ実施</span><div class="gantt-track"><div class="gantt-bar" style="left:95%;width:1%;background:#dc2626"></div></div></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1-4.2</span>
+  <span class="slide-number">Slide 38 / 56</span>
+</section>
+
+<section class="slide" id="s39">
+  <h2>マイルストーン</h2>
+  <table>
+    <tr><th>マイルストーン</th><th>ターゲット日</th><th>完了基準</th></tr>
+    <tr><td>M1: 環境動作確認完了</td><td>2025-06-03</td><td>Docker Compose起動、両サービスヘルスOK</td></tr>
+    <tr><td>M2: エンドツーエンドテスト成功</td><td>2025-06-05</td><td>ファイルアップロード→解凍の全フロー確認</td></tr>
+    <tr><td>M3: スライド完成</td><td>2025-06-07</td><td>構成図、フロー図、デモスクリプト完成</td></tr>
+    <tr><td>M4: 最終リハーサル完了</td><td>2025-06-09</td><td>全チームでの通し演習完了</td></tr>
+    <tr><td>M5: デモ実施</td><td>2025-06-10</td><td>ステークホルダーへのデモ完了</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.2</span>
+  <span class="slide-number">Slide 39 / 56</span>
+</section>
+
+<section class="slide" id="s40">
+  <h2>依存関係と关键パス</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">关键パス</div><p>環境準備 → テストデータ準備 → デモリハーサル → 最終確認 → デモ実施</p></div>
+    <div class="card"><div class="card-title">並列実行可能</div><p>スライド作成（フェーズ4）は他のフェーズと並列実行可能</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node accent">環境準備</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">テストデータ</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">リハーサル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">最終確認</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">デモ実施</div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>20%バッファ:</strong> スケジュールには20%のバッファが含まれています。予期せぬ問題が発生しても、デモ実施日（06-10）に影響しないよう設計されています。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1</span>
+  <span class="slide-number">Slide 40 / 56</span>
+</section>
+
+<section class="slide" id="s41">
+  <h2>フェーズ詳細 — 環境準備</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">フェーズ1: 環境準備</div><p><strong>期間:</strong> 06-02 〜 06-03（2日）<br><strong>責任者:</strong> Dev Lead<br><strong>タスク:</strong><br>• Docker Compose環境構築<br>• App1, App2の起動確認<br>• ヘルスチェック動作確認</p></div>
+    <div class="card"><div class="card-title">フェーズ2: テストデータ準備</div><p><strong>期間:</strong> 06-02 〜 06-04（3日）<br><strong>責任者:</strong> Dev Team<br><strong>タスク:</strong><br>• テストユーザー作成<br>• サンプルZIPファイル準備<br>• APIテストケース対応</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §4.1</span>
+  <span class="slide-number">Slide 41 / 56</span>
+</section>

@@ -1,0 +1,49 @@
+<section class="slide section-divider" id="s50">
+  <h2>9. 成功基準・まとめ</h2>
+  <p>KPI・仮定条件・制約</p>
+  <span class="slide-number">Slide 50 / 56</span>
+</section>
+
+<section class="slide" id="s51">
+  <h2>成功基準</h2>
+  <table>
+    <tr><th>No.</th><th>成功基準</th><th>測定方法</th><th>ターゲット</th></tr>
+    <tr><td>1</td><td>Docker Compose環境の正常起動</td><td>両サービスヘルスチェック</td><td>100%（3回/3回）</td></tr>
+    <tr><td>2</td><td>ユーザー登録→認証→アップロードの全フロー完了</td><td>エンドツーエンドテストケース</td><td>100%</td></tr>
+    <tr><td>3</td><td>App2での7z解凍結果の確認</td><td>ストレージディレクトリ確認</td><td>100%</td></tr>
+    <tr><td>4</td><td>ステークホルダーの満足度</td><td>デモ後のフィードバック調査</td><td>4/5以上</td></tr>
+    <tr><td>5</td><td>デモ時間の遵守</td><td>時計測</td><td>目標60分 ±10%</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §7</span>
+  <span class="slide-number">Slide 51 / 56</span>
+</section>
+
+<section class="slide" id="s52">
+  <h2>仮定条件</h2>
+  <table>
+    <tr><th>ID</th><th>仮定条件</th><th>影響度</th><th>検証方法</th></tr>
+    <tr><td>A1</td><td>DockerおよびDocker Composeが実行環境にインストール済み</td><td>高</td><td>デモ前確認</td></tr>
+    <tr><td>A2</td><td>localhost:8000 が利用可能</td><td>高</td><td>ポート競合チェック</td></tr>
+    <tr><td>A3</td><td>テスト用ZIPファイルは許可拡張子のみを含む</td><td>中</td><td>ファイル検証テスト</td></tr>
+    <tr><td>A4</td><td>ローカルネットワークの安定性</td><td>高</td><td>事前接続テスト</td></tr>
+    <tr><td>A5</td><td>SQLite3でデモ規模データ処理が可能</td><td>低</td><td>負荷テスト（簡易）</td></tr>
+    <tr><td>A6</td><td>ステークホルダーはデモ日に参加可能</td><td>高</td><td>日程調整メール</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §5</span>
+  <span class="slide-number">Slide 52 / 56</span>
+</section>
+
+<section class="slide" id="s53">
+  <h2>制約条件</h2>
+  <table>
+    <tr><th>ID</th><th>制約</th><th>説明</th></tr>
+    <tr><td>C1</td><td>コード変更不可</td><td>既存コードベースをデモ用に修正しない</td></tr>
+    <tr><td>C2</td><td>データベース固定</td><td>SQLite3の使用を維持</td></tr>
+    <tr><td>C3</td><td>APIレベルデモ</td><td>フロントエンドUIは提供しない</td></tr>
+    <tr><td>C4</td><td>ローカル環境</td><td>外部デプロイメントは行わない</td></tr>
+    <tr><td>C5</td><td>タイムリミット</td><td>デモ実施は60分以内</td></tr>
+  </table>
+  <div class="accent-box"><strong>重要な制約:</strong> 既存のコードベースは一切変更しません。デモは既存システムの設計検証が目的であり、機能追加や修正は行いません。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §6</span>
+  <span class="slide-number">Slide 53 / 56</span>
+</section>

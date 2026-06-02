@@ -1,0 +1,50 @@
+<section class="slide section-divider" id="s42">
+  <h2>7. チーム構成</h2>
+  <p>RACIマトリクスと役割分担</p>
+  <span class="slide-number">Slide 42 / 56</span>
+</section>
+
+<section class="slide" id="s43">
+  <h2>RACIマトリクス</h2>
+  <table>
+    <tr><th>活動</th><th>PM</th><th>Dev Lead</th><th>Dev Team</th><th>QA</th><th>ステークホルダー</th></tr>
+    <tr><td>環境構築</td><td>A</td><td>R</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>テストデータ準備</td><td>A</td><td>R</td><td>R</td><td>C</td><td>I</td></tr>
+    <tr><td>デモスクリプト作成</td><td>A</td><td>R</td><td>C</td><td>I</td><td>C</td></tr>
+    <tr><td>スライド作成</td><td>R</td><td>C</td><td>I</td><td>I</td><td>C</td></tr>
+    <tr><td>リハーサル実施</td><td>A</td><td>R</td><td>R</td><td>C</td><td>I</td></tr>
+    <tr><td>デモ実施</td><td>R</td><td>R</td><td>C</td><td>I</td><td>I</td></tr>
+    <tr><td>フィードバック収集</td><td>R</td><td>C</td><td>I</td><td>I</td><td>R</td></tr>
+  </table>
+  <div class="highlight-box"><strong>R</strong>=責任者(Responsible) &nbsp; <strong>A</strong>=担当事者(Accountable) &nbsp; <strong>C</strong>=協議者(Consulted) &nbsp; <strong>I</strong>=情報共有(Informed)</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §5.1</span>
+  <span class="slide-number">Slide 43 / 56</span>
+</section>
+
+<section class="slide" id="s44">
+  <h2>役割分担</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">PM</div><p><strong>主な責任:</strong><br>• スケジュール管理<br>• ステークホルダー調整<br>• ドキュメント作成<br>• スライド作成</p></div>
+    <div class="card"><div class="card-title">Dev Lead</div><p><strong>主な責任:</strong><br>• 環境構築<br>• デモ技術責任<br>• トラブルシューティング<br>• デモスクリプト作成</p></div>
+    <div class="card"><div class="card-title">Dev Team</div><p><strong>主な責任:</strong><br>• テストデータ準備<br>• APIテスト<br>• 障害修正<br>• リハーサル参加</p></div>
+    <div class="card"><div class="card-title">QA</div><p><strong>主な責任:</strong><br>• テストケースレビュー<br>• デモ動作検証<br>• 品質確認</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1rem;">
+    <div class="flow-node">ステークホルダー</div>
+    <span class="flow-label" style="margin:0 0.5rem;">要件確認・デモ参加・フィードバック</span>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §5.2</span>
+  <span class="slide-number">Slide 44 / 56</span>
+</section>
+
+<section class="slide" id="s45">
+  <h2>コミュニケーション体制</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">日次進捗確認</div><p>Dev Lead主導の短いスタンドアップ。環境構築・テストデータの進捗共有。</p></div>
+    <div class="card"><div class="card-title">週次ステークホルダーMTG</div><p>PM主導。進捗報告、課題共有、フィードバック収集。</p></div>
+    <div class="card"><div class="card-title">緊急対応</div><p>ブロックしている課題は即座にDev LeadまたはPMへエスカレーション。</p></div>
+  </div>
+  <div class="accent-box"><strong>エスカレーションパス:</strong> Dev Team → Dev Lead → PM → ステークホルダー</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §5</span>
+  <span class="slide-number">Slide 45 / 56</span>
+</section>

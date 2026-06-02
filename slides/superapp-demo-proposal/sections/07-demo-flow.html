@@ -1,0 +1,147 @@
+<section class="slide section-divider" id="s27">
+  <h2>5. デモフロー</h2>
+  <p>8ステップ・ユーザージャーニーとワウモーメント</p>
+  <span class="slide-number">Slide 27 / 56</span>
+</section>
+
+<section class="slide" id="s28">
+  <h2>デモフロー全体像</h2>
+  <div class="flow-row">
+    <div class="flow-node">① 環境起動</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">② ヘルスチェック</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">③ ユーザー登録</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">④ トークン取得</div>
+  </div>
+  <div class="flow-row" style="margin-top:1rem;">
+    <div class="flow-node warm">⑤ ファイルアップロード</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">⑥ ストレージ確認</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">⑦ ユーザー検索</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">⑧ 環境停止</div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>総実行時間:</strong> 目標60分 ±10% &nbsp;|&nbsp; <strong>環境:</strong> ローカルDocker Compose &nbsp;|&nbsp; <strong>方式:</strong> APIレベル（UIなし）</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 28 / 56</span>
+</section>
+
+<section class="slide" id="s29">
+  <h2>ステップ1-2: 環境起動・ヘルスチェック</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">ステップ1: 環境起動</div><p><strong>コマンド:</strong> docker compose up<br><strong>期待結果:</strong> 全サービス即時稼働<br><strong>確認:</strong> 両コンテナのステータスがrunning</p></div>
+    <div class="card"><div class="card-title">ステップ2: ヘルスチェック</div><p><strong>リクエスト:</strong> GET /gateway/health/?module=/health.php<br><strong>期待結果:</strong> "OK"（プレーン文字列）<br><strong>確認:</strong> App1とApp2の両方が応答</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">docker compose up</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: running</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: running</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">ヘルスチェック OK</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 29 / 56</span>
+</section>
+
+<section class="slide" id="s30">
+  <h2>ステップ3-4: ユーザー登録・トークン取得</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">ステップ3: ユーザー登録</div><p><strong>リクエスト:</strong> POST /gateway/user/<br><strong>Body:</strong> {username, email, password}<br><strong>期待結果:</strong> username文字列</p></div>
+    <div class="card"><div class="card-title">ステップ4: トークン取得</div><p><strong>リクエスト:</strong> POST /auth/token/<br><strong>Body:</strong> {username, password}<br><strong>期待結果:</strong> {access, refresh}</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">ユーザー情報</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">POST /gateway/user/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">POST /auth/token/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">JWTトークン取得</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 30 / 56</span>
+</section>
+
+<section class="slide" id="s31">
+  <h2>ステップ5: ファイルアップロード</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">リクエスト詳細</div><p><strong>エンドポイント:</strong> POST /gateway/transport/<br><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;<br><strong>Files:</strong> file=@sample.zip<br><strong>期待結果:</strong> "OK"</p></div>
+    <div class="card"><div class="card-title">内部処理フロー</div><p>1. JWTトークン検証<br>2. ZIPファイルの拡張子チェック<br>3. 許可済み → App2へPOST転送<br>4. App2: 7z解凍 + storage/&lt;id&gt;/ 配置<br>5. 完了レスポンス返却</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">sample.zip</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: 認証 + 検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: 7z解凍</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">"OK"</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 31 / 56</span>
+</section>
+
+<section class="slide" id="s32">
+  <h2>ステップ6: ストレージ確認</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">確認手順</div><p>App2の storage/&lt;user-id&gt;/ ディレクトリに移動し、解凍済みファイルの存在を確認します。</p></div>
+    <div class="card"><div class="card-title">期待されるディレクトリ構造</div><p>storage/<br>└── &lt;user-id&gt;/<br>&nbsp;&nbsp;├── file1.txt<br>&nbsp;&nbsp;├── file2.png<br>&nbsp;&nbsp;└── file3.docx</p></div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>確認ポイント:</strong> アップロードしたZIPファイル内のすべてのファイルが、正しいユーザーIDディレクトリに解凍・配置されていることを確認します。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 32 / 56</span>
+</section>
+
+<section class="slide" id="s33">
+  <h2>ステップ7-8: ユーザー検索・環境停止</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">ステップ7: ユーザー検索</div><p><strong>リクエスト:</strong> POST /gateway/user/find/?offset=0<br><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;<br><strong>Body:</strong> {username: "xxx"}<br><strong>期待結果:</strong> ユーザーリスト</p></div>
+    <div class="card"><div class="card-title">ステップ8: 環境停止</div><p><strong>コマンド:</strong> docker compose down<br><strong>期待結果:</strong> 全コンテナの停止<br><strong>確認:</strong> docker compose ps で空</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">認証付き検索</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">POST /gateway/user/find/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">ユーザーリスト</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">docker compose down</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 33 / 56</span>
+</section>
+
+<section class="slide" id="s34">
+  <h2>ワウモーメント — 5つのハイライト</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">① ワンコマンド起動</div><p><code>docker compose up</code> で全サービス即時稼働。<br><strong>反応:</strong> 「シンプルで良い」</p></div>
+    <div class="card"><div class="card-title">② エンドツーエンドファイルフロー</div><p>アップロードから解凍まで自動処理。<br><strong>反応:</strong> 2サービス連携のスムーズさ</p></div>
+    <div class="card"><div class="card-title">③ 認証ガード付きAPI</div><p>JWTトークンなしではアクセス不可。<br><strong>反応:</strong> セキュリティ設計の意識</p></div>
+    <div class="card"><div class="card-title">④ ファイル検証</div><p>許可拡張子のみ受け付けるバリデーション。<br><strong>反応:</strong> セキュリティフィルタリング</p></div>
+    <div class="card"><div class="card-title">⑤ ダイナミックスケーリング</div><p>uWSGIのcheaperモードによる自動プロセス調整。<br><strong>反応:</strong> 運用効率への配慮</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.2</span>
+  <span class="slide-number">Slide 34 / 56</span>
+</section>
+
+<section class="slide" id="s35">
+  <h2>デモフローまとめ</h2>
+  <table>
+    <tr><th>ステップ</th><th>操作</th><th>コマンド/エンドポイント</th><th>期待結果</th></tr>
+    <tr><td>1</td><td>環境起動</td><td>docker compose up</td><td>両サービスrunning</td></tr>
+    <tr><td>2</td><td>ヘルスチェック</td><td>GET /gateway/health/</td><td>"OK"</td></tr>
+    <tr><td>3</td><td>ユーザー登録</td><td>POST /gateway/user/</td><td>username文字列</td></tr>
+    <tr><td>4</td><td>トークン取得</td><td>POST /auth/token/</td><td>{access, refresh}</td></tr>
+    <tr><td>5</td><td>ファイルアップロード</td><td>POST /gateway/transport/</td><td>"OK"</td></tr>
+    <tr><td>6</td><td>ストレージ確認</td><td>storage/&lt;id&gt;/ 確認</td><td>解凍済みファイル</td></tr>
+    <tr><td>7</td><td>ユーザー検索</td><td>POST /gateway/user/find/</td><td>ユーザーリスト</td></tr>
+    <tr><td>8</td><td>環境停止</td><td>docker compose down</td><td>全コンテナ停止</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §3.1</span>
+  <span class="slide-number">Slide 35 / 56</span>
+</section>

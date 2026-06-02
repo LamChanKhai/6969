@@ -46,6 +46,77 @@ SuperAppは以下のコア機能を有するWebアプリケーションです：
 
 ---
 
+## 2.3 作業分解構造（WBS）
+
+### 1. 環境準備
+#### 1.1 Docker環境のインストールと設定 — Est: 0.5日 — Owner: Dev Lead
+#### 1.2 Docker Composeビルドと起動テスト — Est: 1日 — Owner: Dev Lead
+#### 1.3 両サービスのヘルスチェック確認 — Est: 0.5日 — Owner: Dev Lead
+
+### 2. テストデータ準備
+#### 2.1 テストユーザー作成用JSONペイロード準備 — Est: 0.5日 — Owner: Dev Team
+#### 2.2 サンプルZIPファイル作成（許可拡張子のみ） — Est: 0.5日 — Owner: Dev Team
+#### 2.3 テスト用シナリオ定義 — Est: 1日 — Owner: Dev Team
+
+### 3. デモリハーサル
+#### 3.1 エンドツーエンドフローテスト — Est: 1日 — Owner: Dev Lead
+#### 3.2 トラブルシューティングと改善 — Est: 1日 — Owner: Dev Lead
+
+### 4. スライド作成
+#### 4.1 構成図とアーキテクチャ図作成 — Est: 1日 — Owner: PM
+#### 4.2 デモスクリプトとナレーション作成 — Est: 1日 — Owner: PM
+#### 4.3 スライドデザインとレイアウト — Est: 2日 — Owner: PM
+#### 4.4 レビューと修正 — Est: 1日 — Owner: PM
+
+### 5. 最終確認
+#### 5.1 全チーム通しリハーサル — Est: 0.5日 — Owner: PM + Dev Lead
+#### 5.2 最終チェックリスト確認 — Est: 0.5日 — Owner: PM
+
+### 6. デモ実施
+#### 6.1 デモプレゼンテーション — Est: 0.5日 — Owner: PM + Dev Lead
+#### 6.2 Q&Aセッション — Est: 0.5日 — Owner: PM + Dev Lead
+
+---
+
+## 2.4 ガントチャート
+
+```mermaid
+gantt
+    title SuperApp デモフェーズ ガントチャート
+    dateFormat  YYYY-MM-DD
+    axisFormat  %m/%d
+
+    section 環境準備
+    Docker環境インストール       :a1, 2025-06-02, 0.5d
+    Docker Composeビルド         :a2, after a1, 1d
+    ヘルスチェック確認           :a3, after a2, 0.5d
+
+    section テストデータ準備
+    JSONペイロード準備           :b1, 2025-06-02, 0.5d
+    サンプルZIPファイル作成      :b2, after b1, 0.5d
+    テストシナリオ定義           :b3, after b2, 1d
+
+    section デモリハーサル
+    エンドツーエンドテスト       :c1, 2025-06-05, 1d
+    トラブルシューティング       :c2, after c1, 1d
+
+    section スライド作成
+    構成図作成                   :d1, 2025-06-02, 1d
+    デモスクリプト作成           :d2, after d1, 1d
+    スライドデザイン             :d3, after d2, 2d
+    レビューと修正               :d4, after d3, 1d
+
+    section 最終確認
+    通しリハーサル               :e1, 2025-06-09, 0.5d
+    チェックリスト確認           :e2, after e1, 0.5d
+
+    section デモ実施
+    デモプレゼンテーション       :f1, 2025-06-10, 0.5d
+    Q&Aセッション                :f2, after f1, 0.5d
+```
+
+---
+
 ## 3. アプローチ
 
 ### 3.1 デモ手法
@@ -68,12 +139,12 @@ SuperAppは以下のコア機能を有するWebアプリケーションです：
 
 ```
 1. 環境起動（docker compose up）
-2. ヘルスチェック確認（App1 + App2）
-3. ユーザー登録（POST /gateway/user/）
-4. トークン取得（POST /auth/token/）
-5. ファイルアップロード（POST /gateway/transport/）
-6. ストレージ確認（App2側での解凍結果）
-7. ユーザー検索（POST /gateway/user/find/）
+2. ヘルスチェック確認（GET /gateway/health/?module=/health.php → "OK"）
+3. ユーザー登録（POST /gateway/user/ → username文字列）
+4. トークン取得（POST /auth/token/ → {access, refresh}）
+5. ファイルアップロード（POST /gateway/transport/ → "OK"）
+6. ストレージ確認（App2側 storage/<user-id>/ 内の解凍結果）
+7. ユーザー検索（POST /gateway/user/find/?offset=0 → ユーザーリスト）
 8. 環境停止（docker compose down）
 ```
 

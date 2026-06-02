@@ -1,0 +1,44 @@
+<section class="slide section-divider" id="s46">
+  <h2>8. リスク管理</h2>
+  <p>リスクレジスターと軽減策</p>
+  <span class="slide-number">Slide 46 / 56</span>
+</section>
+
+<section class="slide" id="s47">
+  <h2>リスクレジスター — 高リスク</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>軽減策</th><th>責任者</th></tr>
+    <tr><td>R1</td><td>Docker Compose環境の起動失敗</td><td>中</td><td>高</td><td><span class="badge badge-red">高</span></td><td>事前に複数回起動テスト、代替環境の準備</td><td>Dev Lead</td></tr>
+    <tr><td>R6</td><td>ステークホルダーのスケジュール調整困難</td><td>中</td><td>高</td><td><span class="badge badge-red">高</span></td><td>候補日程を複数提示、録画対応準備</td><td>PM</td></tr>
+  </table>
+  <div class="accent-box"><strong>対応方針:</strong> 高リスク項目には事前テストと代替手段の両方を準備します。特にDocker環境の安定性はデモ成功の前提条件です。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §6.1</span>
+  <span class="slide-number">Slide 47 / 56</span>
+</section>
+
+<section class="slide" id="s48">
+  <h2>リスクレジスター — 中リスク</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>軽減策</th><th>責任者</th></tr>
+    <tr><td>R2</td><td>ファイルアップロードのタイムアウト</td><td>低</td><td>中</td><td><span class="badge badge-orange">中</span></td><td>タイムアウト値の調整、小サイズテストファイル使用</td><td>Dev Lead</td></tr>
+    <tr><td>R3</td><td>JWT認証トークンの期限切れ</td><td>中</td><td>中</td><td><span class="badge badge-orange">中</span></td><td>デモ前にトークン再発行、リフレッシュフロー準備</td><td>Dev Team</td></tr>
+    <tr><td>R5</td><td>デモ当日のネットワーク障害</td><td>低</td><td>高</td><td><span class="badge badge-orange">中</span></td><td>ローカル環境実行、オフライン対応準備</td><td>Dev Lead</td></tr>
+    <tr><td>R7</td><td>App2のPHPサービス応答遅延</td><td>中</td><td>中</td><td><span class="badge badge-orange">中</span></td><td>ヘルスチェックで事前確認、リトライロジック準備</td><td>Dev Lead</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §6.1</span>
+  <span class="slide-number">Slide 48 / 56</span>
+</section>
+
+<section class="slide" id="s49">
+  <h2>リスクレジスター — 低リスク</h2>
+  <table>
+    <tr><th>ID</th><th>リスク</th><th>確率</th><th>影響</th><th>スコア</th><th>軽減策</th><th>責任者</th></tr>
+    <tr><td>R4</td><td>7z解凍処理の失敗（不正ファイル）</td><td>低</td><td>中</td><td><span class="badge badge-green">低</span></td><td>バリデーション済みテストファイルのみ使用</td><td>Dev Team</td></tr>
+  </table>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">リスク監視</div><p>全リスクはOpenステータス。デモリハーサル（フェーズ3）で再評価し、必要に応じて軽減策を更新します。</p></div>
+    <div class="card"><div class="card-title">エスカレーション</div><p>軽減策が効果的でない場合、Dev Lead → PM → ステークホルダーの順でエスカレーションします。</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §6.1</span>
+  <span class="slide-number">Slide 49 / 56</span>
+</section>

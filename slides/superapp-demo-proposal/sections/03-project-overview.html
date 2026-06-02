@@ -1,0 +1,60 @@
+<section class="slide section-divider" id="s3">
+  <h2>1. プロジェクト概要</h2>
+  <p>背景、目的、スコープ</p>
+  <span class="slide-number">Slide 3 / 56</span>
+</section>
+
+<section class="slide" id="s4">
+  <h2>プロジェクト背景</h2>
+  <p>SuperAppは、Django REST APIゲートウェイとPHP/Apacheストレージサービスからなる2マイクロサービスアーキテクチャのWebアプリケーションです。</p>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">ユーザー認証・管理</div><p>JWTベース認証（SimpleJWT）、ユーザー登録・検索機能</p></div>
+    <div class="card"><div class="card-title">ファイルアップロード・処理</div><p>ZIPファイル検証（許可拡張子チェック）、7zアーカイブ解凍処理</p></div>
+    <div class="card"><div class="card-title">サービスヘルスチェック</div><p>モジュール別死活監視、サービス連携確認</p></div>
+  </div>
+  <div class="highlight-box"><strong>プロジェクトID:</strong> SA-DEMO-2025 &nbsp;|&nbsp; <strong>バージョン:</strong> 1.0 &nbsp;|&nbsp; <strong>日付:</strong> 2025-06-01</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §1.1</span>
+  <span class="slide-number">Slide 4 / 56</span>
+</section>
+
+<section class="slide" id="s5">
+  <h2>デモの目的</h2>
+  <ul>
+    <li>開発ステークホルダーに対してシステムアーキテクチャとコア機能の実証</li>
+    <li>ファイルアップロードからストレージサービスへのエンドツーエンドデータフローの検証</li>
+    <li>コンテナ化環境でのサービス連携動作の確認</li>
+    <li>セキュリティ設計（ファイル検証、認証ガード）のデモンストレーション</li>
+  </ul>
+  <div class="accent-box"><strong>キーメッセージ:</strong> 本デモは、設計の妥当性と技術スタックの選択を検証することを目的としています。機能追加や本番デプロイは対象外です。</div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §1.2</span>
+  <span class="slide-number">Slide 5 / 56</span>
+</section>
+
+<section class="slide" id="s6">
+  <h2>スコープ内 — インクルード</h2>
+  <table>
+    <tr><th>No.</th><th>項目</th><th>説明</th></tr>
+    <tr><td>1</td><td>デモ環境構築</td><td>Docker Composeによるローカル実行環境の準備と動作確認</td></tr>
+    <tr><td>2</td><td>App1 ゲートウェイデモ</td><td>ユーザー登録、JWT認証、ファイルアップロードAPI、ヘルスチェックAPI</td></tr>
+    <tr><td>3</td><td>App2 ストレージデモ</td><td>ファイル受領、7z解凍処理、ストレージディレクトリ管理</td></tr>
+    <tr><td>4</td><td>サービス連携フロー</td><td>App1→App2間のファイルトランスポートエンドツーエンド</td></tr>
+    <tr><td>5</td><td>デモスライド作成</td><td>構成図、アーキテクチャ図、ユーザージャーニー、デモフロー</td></tr>
+    <tr><td>6</td><td>テストデータ準備</td><td>テストユーザー、サンプルZIPファイル、ヘルスチェックシナリオ</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §2.1</span>
+  <span class="slide-number">Slide 6 / 56</span>
+</section>
+
+<section class="slide" id="s7">
+  <h2>スコープ外 — エクスクルード</h2>
+  <table>
+    <tr><th>No.</th><th>項目</th><th>理由</th></tr>
+    <tr><td>1</td><td>本番環境デプロイメント</td><td>デモフェーズではローカルコンテナ環境のみ対象</td></tr>
+    <tr><td>2</td><td>フロントエンドUI開発</td><td>APIレベルでのデモンストレーションに限定</td></tr>
+    <tr><td>3</td><td>パフォーマンステスト</td><td>機能検証が主目的。負荷テストは後工程</td></tr>
+    <tr><td>4</td><td>セキュリティ監査</td><td>CTFコンテキストを踏まえた設計理解は行うが、正式な脆弱性評価は対象外</td></tr>
+    <tr><td>5</td><td>DB移行（SQLite→PostgreSQL）</td><td>既存設計の維持</td></tr>
+  </table>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §2.2</span>
+  <span class="slide-number">Slide 7 / 56</span>
+</section>

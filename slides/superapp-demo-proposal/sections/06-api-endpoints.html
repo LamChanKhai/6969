@@ -1,0 +1,104 @@
+<section class="slide section-divider" id="s20">
+  <h2>4. APIエンドポイント</h2>
+  <p>App1ゲートウェイ + App2ストレージの詳細</p>
+  <span class="slide-number">Slide 20 / 55</span>
+</section>
+
+<section class="slide" id="s21">
+  <h2>App1 — ユーザー管理API</h2>
+  <table>
+    <tr><th>メソッド</th><th>エンドポイント</th><th>説明</th><th>認証</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td>/gateway/user/</td><td>新しいユーザーアカウントの作成</td><td>不要</td></tr>
+    <tr><td><span class="badge badge-blue">POST</span></td><td>/auth/token/</td><td>JWTアクセストークンの発行</td><td>不要</td></tr>
+    <tr><td><span class="badge badge-purple">POST</span></td><td>/auth/refresh-token/</td><td>JWTトークンの更新</td><td>リフレッシュトークン</td></tr>
+    <tr><td><span class="badge badge-orange">POST</span></td><td>/gateway/user/find/</td><td>条件ベースのユーザー検索（ページネーション付き）</td><td>Bearerトークン</td></tr>
+  </table>
+  <div class="highlight-box"><strong>ユーザー登録フロー:</strong> POST /gateway/user/ → レスポンス(username文字列) → POST /auth/token/ → レスポンス({access, refresh})</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 21 / 56</span>
+</section>
+
+<section class="slide" id="s22">
+  <h2>App1 — ファイル・ヘルスAPI</h2>
+  <table>
+    <tr><th>メソッド</th><th>エンドポイント</th><th>説明</th><th>認証</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td>/gateway/transport/</td><td>ZIPファイル検証とApp2への転送</td><td>Bearerトークン</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td>/gateway/health/</td><td>App2モジュールの死活監視</td><td>不要</td></tr>
+  </table>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">ファイルアップロード</div><p><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;<br><strong>Files:</strong> file=@sample.zip<br><strong>期待レスポンス:</strong> "OK"</p></div>
+    <div class="card"><div class="card-title">ヘルスチェック</div><p><strong>パラメータ:</strong> module=/health.php<br><strong>期待レスポンス:</strong> "OK"（プレーン文字列）<br><strong>用途:</strong> モジュール別死活監視</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 22 / 56</span>
+</section>
+
+<section class="slide" id="s23">
+  <h2>App2 — ストレージAPI</h2>
+  <table>
+    <tr><th>メソッド</th><th>エンドポイント</th><th>説明</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td>/storage.php</td><td>ZIPファイル受領（id=ユーザーID、file=ファイル）、7z解凍、ストレージ配置（storage/&lt;id&gt;/）</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td>/health.php</td><td>サービス死活確認</td></tr>
+  </table>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">ファイル受領処理</div><p>パラメータ: id（ユーザーID）, file（ZIPファイル）<br>処理フロー: 受領 → 7z解凍 → storage/&lt;id&gt;/ へ配置</p></div>
+    <div class="card"><div class="card-title">ストレージ構造</div><p>storage/<br>├── &lt;user-1&gt;/<br>&nbsp;&nbsp;├── extracted_file1.txt<br>&nbsp;&nbsp;└── extracted_file2.png<br>└── &lt;user-2&gt;/<br>&nbsp;&nbsp;└── ...</p></div>
+  </div>
+  <div class="accent-box"><strong>注意:</strong> App2はApp1からの内部通信のみ受け付けます。外部からの直接アクセスはできません。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 23 / 56</span>
+</section>
+
+<section class="slide" id="s24">
+  <h2>API認証マトリクス</h2>
+  <table>
+    <tr><th>エンドポイント</th><th>認証方式</th><th>トークン必須</th></tr>
+    <tr><td>POST /gateway/user/</td><td>—</td><td>❌</td></tr>
+    <tr><td>POST /auth/token/</td><td>—</td><td>❌</td></tr>
+    <tr><td>POST /auth/refresh-token/</td><td>リフレッシュトークン</td><td>✅</td></tr>
+    <tr><td>POST /gateway/transport/</td><td>Bearer アクセストークン</td><td>✅</td></tr>
+    <tr><td>POST /gateway/user/find/</td><td>Bearer アクセストークン</td><td>✅</td></tr>
+    <tr><td>GET /gateway/health/</td><td>—</td><td>❌</td></tr>
+  </table>
+  <div class="highlight-box"><strong>セキュリティ設計:</strong> 機微な操作（ファイルアップロード、ユーザー検索）はJWTアクセストークンで保護されています。トークンなしまたは無効トークンでのアクセスは拒否されます。</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 24 / 56</span>
+</section>
+
+<section class="slide" id="s25">
+  <h2>ファイル検証ルール</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">許可拡張子</div><p>.txt<br>.docx<br>.png<br>.jpg<br>.jpeg</p></div>
+    <div class="card"><div class="card-title">検証フロー</div><p>1. ZIPファイル受信<br>2. 内部ファイルの拡張子チェック<br>3. 許可外の拡張子 → 拒否<br>4. 許可 → App2へ転送</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">ZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">拡張子チェック</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">許可 → App2</div>
+  </div>
+  <div class="flow-row" style="margin-top:.5rem;">
+    <div class="flow-node">ZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">拡張子チェック</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node" style="background:#fee2e2;border-color:#991b1b;color:#991b1b;">拒否 → エラー</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §5</span>
+  <span class="slide-number">Slide 25 / 56</span>
+</section>
+
+<section class="slide" id="s26">
+  <h2>APIレスポンス形式</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">ユーザー登録</div><p><strong>POST /gateway/user/</strong><br>Body: {username, email, password}<br>→ username文字列</p></div>
+    <div class="card"><div class="card-title">トークン取得</div><p><strong>POST /auth/token/</strong><br>Body: {username, password}<br>→ {access, refresh}</p></div>
+    <div class="card"><div class="card-title">ファイルアップロード</div><p><strong>POST /gateway/transport/</strong><br>Headers: Bearer &lt;token&gt;<br>→ "OK"</p></div>
+    <div class="card"><div class="card-title">ヘルスチェック</div><p><strong>GET /gateway/health/</strong><br>module=/health.php<br>→ "OK"（プレーン文字列）</p></div>
+    <div class="card"><div class="card-title">ユーザー検索</div><p><strong>POST /gateway/user/find/</strong><br>Body: {username: "xxx"}<br>→ ユーザーリスト</p></div>
+    <div class="card"><div class="card-title">ストレージ</div><p><strong>POST /storage.php</strong><br>id=ユーザーID, file=ファイル<br>→ 解凍結果</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 26 / 56</span>
+</section>

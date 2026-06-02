@@ -1,0 +1,115 @@
+<section class="slide section-divider" id="s8">
+  <h2>2. システムアーキテクチャ</h2>
+  <p>2マイクロサービス構成とデータフロー</p>
+  <span class="slide-number">Slide 8 / 56</span>
+</section>
+
+<section class="slide" id="s9">
+  <h2>全体アーキテクチャ</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: Django/uWSGI<br><small>ポート 8000</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: PHP/Apache<br><small>内部通信</small></div>
+  </div>
+  <div class="flow-label" style="margin-top:1rem;">Docker Compose ネットワーク</div>
+  <div class="card-grid grid3" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">App1 — ゲートウェイ</div><p>Django 5.2 + DRF + uWSGI<br>REST API、認証、ファイル検証</p></div>
+    <div class="card"><div class="card-title">App2 — ストレージ</div><p>PHP/Apache + Archive7z<br>ファイル受領・7z解凍・ストレージ配置</p></div>
+    <div class="card"><div class="card-title">インフラ</div><p>Docker Compose<br>SQLite3（Django内蔵）<br>内部ネットワーク</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/proposal.md §3.2</span>
+  <span class="slide-number">Slide 9 / 56</span>
+</section>
+
+<section class="slide" id="s10">
+  <h2>Docker Compose 構成</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">app1 サービス</div><p><strong>イメージ:</strong> Django/uWSGI<br><strong>ポート:</strong> 8000（公開）<br><strong>DB:</strong> SQLite3（内蔵）<br><strong>役割:</strong> REST API ゲートウェイ、JWT認証、ファイル検証、App2への転送</p></div>
+    <div class="card"><div class="card-title">app2 サービス</div><p><strong>イメージ:</strong> PHP/Apache<br><strong>ポート:</strong> 内部のみ<br><strong>ストレージ:</strong> flag.txt ボリューム<br><strong>役割:</strong> ファイル受領、7z解凍、storage/&lt;id&gt;/ 配置</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">docker-compose.yaml</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">app1 (:8000)</div>
+    <span class="flow-arrow">↔</span>
+    <div class="flow-node green">app2 (internal)</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 10 / 56</span>
+</section>
+
+<section class="slide" id="s11">
+  <h2>データフロー — ファイルアップロード</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node warm">ZIPファイル送信</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: 拡張子検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: 7z解凍</div>
+  </div>
+  <div class="flow-label">許可拡張子: .txt, .docx, .png, .jpg, .jpeg</div>
+  <div class="card-grid grid2" style="margin-top:1.5rem;">
+    <div class="card"><div class="card-title">App1 処理</div><p>1. JWT認証トークン検証<br>2. ZIPファイル拡張子チェック<br>3. 許可されたファイルをApp2へ転送<br>4. 結果をクライアントへ返却</p></div>
+    <div class="card"><div class="card-title">App2 処理</div><p>1. ファイル受領（id=ユーザーID）<br>2. 7zアーカイブ解凍処理<br>3. storage/&lt;id&gt;/ へ配置<br>4. 完了レスポンス</p></div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 11 / 56</span>
+</section>
+
+<section class="slide" id="s12">
+  <h2>認証フロー — JWTベース</h2>
+  <div class="flow-row">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">POST /auth/token/</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node orange">JWT アクセストークン</div>
+  </div>
+  <div class="flow-label" style="margin-top:.8rem;">トークン付きAPI呼び出し</div>
+  <div class="flow-row" style="margin-top:.8rem;">
+    <div class="flow-node">クライアント</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">Authorization: Bearer &lt;token&gt;</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">認可済みAPI</div>
+  </div>
+  <div class="highlight-box" style="margin-top:1.5rem;"><strong>認証方式:</strong> djangorestframework-simplejwt — アクセストークン + リフレッシュトークンの2階層構造。トークンなしでは保護済みAPIにアクセスできません。</div>
+  <span class="attribution">出展: docs/04_pm_final/handoff_to_slides.md §3.2</span>
+  <span class="slide-number">Slide 12 / 56</span>
+</section>
+
+<section class="slide" id="s13">
+  <h2>ネットワーク構成</h2>
+  <div class="card-grid grid3">
+    <div class="card"><div class="card-title">外部アクセス</div><p>クライアント → App1 (localhost:8000)<br>唯一の公開ポート</p></div>
+    <div class="card"><div class="card-title">内部通信</div><p>App1 ↔ App2<br>Docker内部ネットワーク<br>外部からはアクセス不可</p></div>
+    <div class="card"><div class="card-title">データ永続化</div><p>App1: SQLite3（コンテナ内）<br>App2: flag.txt ボリュームマウント</p></div>
+  </div>
+  <div class="accent-box"><strong>セキュリティ:</strong> App2は外部から直接アクセスできません。すべてのリクエストはApp1ゲートウェイ経由で処理されます。</div>
+  <div class="highlight-box"><strong>ポート公開:</strong> App1: 8000（外部公開）&nbsp;|&nbsp; App2: 内部のみ</div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 13 / 56</span>
+</section>
+
+<section class="slide" id="s14">
+  <h2>ストレージ構成</h2>
+  <div class="card-grid grid2">
+    <div class="card"><div class="card-title">App1 — SQLite3</div><p>ユーザーデータ保存<br>Django内蔵データベース<br>デモ規模で十分な性能</p></div>
+    <div class="card"><div class="card-title">App2 — ファイルストレージ</div><p>storage/&lt;id&gt;/ ディレクトリ<br>7z解凍済みファイル配置<br>flag.txt ボリュームマウント</p></div>
+  </div>
+  <div class="flow-row" style="margin-top:1.5rem;">
+    <div class="flow-node">ZIPファイル</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node accent">App1: 検証</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node green">App2: 7z解凍</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node">storage/&lt;id&gt;/</div>
+  </div>
+  <span class="attribution">出展: docs/04_pm_final/demo_scope.md §2.2.1</span>
+  <span class="slide-number">Slide 14 / 56</span>
+</section>
