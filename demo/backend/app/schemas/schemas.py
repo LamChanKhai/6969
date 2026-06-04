@@ -300,3 +300,71 @@ class ErrorResponse(BaseModel):
 class HealthCheckResponse(BaseModel):
     status: str = "ok"
     service: str = "CSCV2025 Secure Platform"
+
+
+# ── Monthly Budget ─────────────────────────────────────────────────────
+
+class MonthlyBudgetResponse(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    month: str
+    upload_limit: int
+    upload_count: int
+    storage_limit_bytes: int
+    storage_used_bytes: int
+    api_call_limit: int
+    api_call_count: int
+    budget_exceeded: bool
+    notified_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class MonthlyBudgetUpdate(BaseModel):
+    upload_limit: Optional[int] = None
+    storage_limit_bytes: Optional[int] = None
+    api_call_limit: Optional[int] = None
+
+
+class MonthlyBudgetUsageResponse(BaseModel):
+    month: str
+    upload_usage: float
+    storage_usage: float
+    api_call_usage: float
+    budget_exceeded: bool
+    upload_count: int
+    upload_limit: int
+    storage_used_bytes: int
+    storage_limit_bytes: int
+    api_call_count: int
+    api_call_limit: int
+
+
+# ── Notification ─────────────────────────────────────────────────────────
+
+class NotificationResponse(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    title: str
+    message: str
+    notification_type: str
+    is_read: bool
+    read_at: Optional[datetime] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class NotificationListResponse(BaseModel):
+    items: List[NotificationResponse]
+    total: int
+    skip: int
+    limit: int
+
+
+class NotificationCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    message: str = Field(..., min_length=1)
+    notification_type: str = "info"

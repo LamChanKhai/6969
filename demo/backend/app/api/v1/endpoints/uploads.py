@@ -25,6 +25,11 @@ from app.services.upload_service import (
     get_upload_with_events,
 )
 from app.services.audit_service import create_audit_log
+from app.services.budget_service import (
+    increment_upload_count,
+    check_and_notify_budget_exceeded,
+    send_budget_warning,
+)
 from app.schemas.schemas import (
     FileUploadResponse,
     FileUploadListResponse,
@@ -97,6 +102,15 @@ async def upload_file(
         mime_type=mime_type,
         storage_path=str(file_path),
     )
+
+    # Track monthly budget usage
+    exceeded, budget = await increment_upload_count(db, user_id, file_size)
+
+    # Send warning if approaching limit (before exceeding)
+    if not exceeded:
+        await send_budget_warning(db, user_id, budget, threshold=0.8)
+    else:
+        await check_and_notify_budget_exceeded(db, user_id, budget)
 
     # Security scan
     upload.security_scan_status = "scanning"

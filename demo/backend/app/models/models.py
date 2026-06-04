@@ -63,6 +63,8 @@ class User(Base):
     resolved_events: Mapped[list["SecurityEvent"]] = relationship(
         back_populates="resolver", foreign_keys="SecurityEvent.resolved_by"
     )
+    monthly_budgets: Mapped[list["MonthlyBudget"]] = relationship(back_populates="user")
+    notifications: Mapped[list["Notification"]] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return f"<User {self.username} ({self.role})>"
@@ -404,3 +406,69 @@ class PipelineExecutionStep(Base):
 
     def __repr__(self) -> str:
         return f"<PipelineExecutionStep #{self.step_number} {self.step_name} ({self.status})>"
+
+
+class MonthlyBudget(Base):
+    __tablename__ = "monthly_budgets"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+        index=True,
+    )
+    month: Mapped[str] = mapped_column(String(7), nullable=False)
+    upload_limit: Mapped[int] = mapped_column(Integer, default=1000)
+    upload_count: Mapped[int] = mapped_column(Integer, default=0)
+    storage_limit_bytes: Mapped[int] = mapped_column(Integer, default=50 * 1024 * 1024 * 1024)
+    storage_used_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    api_call_limit: Mapped[int] = mapped_column(Integer, default=10000)
+    api_call_count: Mapped[int] = mapped_column(Integer, default=0)
+    budget_exceeded: Mapped[bool] = mapped_column(Boolean, default=False)
+    notified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped["User"] = relationship(back_populates="monthly_budgets")
+
+    def __repr__(self) -> str:
+        return f"<MonthlyBudget {self.user_id} {self.month}>"
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    title: Mapped[str] = mapped_column(String(255))
+    message: Mapped[str] = mapped_column(Text)
+    notification_type: Mapped[str] = mapped_column(String(50), default="info")
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False)
+    read_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), index=True
+    )
+
+    user: Mapped["User"] = relationship(back_populates="notifications")
+
+    def __repr__(self) -> str:
+        return f"<Notification {self.title}>"

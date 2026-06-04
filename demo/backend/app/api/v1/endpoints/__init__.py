@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     scans,
     api_keys,
     rate_limits,
+    budget,
 )
 
 router = APIRouter()
@@ -25,4 +26,5 @@ router.include_router(pipeline.router, prefix="/pipeline", tags=["DevSecOps Pipe
 router.include_router(scans.router, prefix="/scans", tags=["File Scans"])
 router.include_router(api_keys.router, prefix="/api-keys", tags=["API Keys"])
 router.include_router(rate_limits.router, prefix="/rate-limits", tags=["Rate Limits"])
+router.include_router(budget.router, prefix="/budget", tags=["Budget & Notifications"])
 router.include_router(health.router, tags=["Health"])

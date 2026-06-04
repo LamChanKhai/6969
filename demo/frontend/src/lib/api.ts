@@ -140,3 +140,39 @@ export async function listRateLimits(ipAddress?: string, endpoint?: string, acti
   if (actionTaken) params.set('action_taken', actionTaken);
   return apiFetch(`/api/v1/rate-limits/?${params}`);
 }
+
+// Budget & Notifications
+export async function getBudgetUsage(month?: string): Promise<any> {
+  const params = month ? `?month=${month}` : '';
+  return apiFetch(`/api/v1/budget/usage${params}`);
+}
+
+export async function updateBudgetLimits(data: { upload_limit?: number; storage_limit_bytes?: number; api_call_limit?: number }): Promise<any> {
+  return apiFetch('/api/v1/budget/usage', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+}
+
+export async function listNotifications(isRead?: boolean, skip = 0, limit = 20): Promise<PaginatedResponse<any>> {
+  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  if (isRead !== undefined) params.set('is_read', String(isRead));
+  return apiFetch(`/api/v1/budget/notifications/?${params}`);
+}
+
+export async function markNotificationRead(id: string): Promise<any> {
+  return apiFetch(`/api/v1/budget/notifications/${id}/read`, {
+    method: 'POST',
+  });
+}
+
+export async function markAllNotificationsRead(): Promise<any> {
+  return apiFetch('/api/v1/budget/notifications/read-all', {
+    method: 'POST',
+  });
+}
+
+export async function getUnreadNotificationCount(): Promise<{ unread_count: number }> {
+  return apiFetch('/api/v1/budget/notifications/unread-count');
+}
